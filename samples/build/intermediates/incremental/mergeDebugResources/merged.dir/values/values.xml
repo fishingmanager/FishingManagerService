@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="shadow_end">#00000000</color>
+    <color name="shadow_start">#80000000</color>
+    <dimen name="shadow_size">8dip</dimen>
+    <dimen name="table_height">40dp</dimen>
+    <dimen name="table_width">100dp</dimen>
+    <item name="tag_column" type="id"/>
+    <item name="tag_row" type="id"/>
+    <item name="tag_type_view" type="id"/>
+    <string name="app_name">TableFixHeaders Samples</string>
+    <string name="family_adapter">Family adapter</string>
+    <string name="simple_adapter">Simple adapter</string>
+    <string name="style_adapter">Style adapter</string>
+    <style name="AppBaseTheme" parent="android:Theme.Light"/>
+    <style name="AppTheme" parent="AppBaseTheme"/>
+</resources>

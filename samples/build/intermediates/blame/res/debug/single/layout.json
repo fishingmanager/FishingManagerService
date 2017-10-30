@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\item_table1_header.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\item_table1_header.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\item_table_header.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\item_table_header.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\item_table1.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\item_table1.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\activity_main.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\item_table_first.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\item_table_first.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\item_table_header_first.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\item_table_header_first.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\table.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\table.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\item_table.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\item_table.xml"
+    },
+    {
+        "merged": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\build\\intermediates\\res\\merged\\debug\\layout\\item_table_family.xml",
+        "source": "D:\\Android\\projects\\fishing\\FishingManagerService\\samples\\src\\main\\res\\layout\\item_table_family.xml"
+    }
+]
