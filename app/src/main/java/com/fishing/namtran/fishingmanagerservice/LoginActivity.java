@@ -30,6 +30,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.fishing.namtran.fishingmanagerservice.dbconnection.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -335,7 +337,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 finish();
-                sendMessage();
+                User user = new User();
+                user.createUser(getApplicationContext(), mEmail, mPassword, "0");
+                redirect();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -349,7 +353,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         /** Called when the user taps the Send button */
-        private void sendMessage() {
+        private void redirect() {
             Intent intent = new Intent(getApplicationContext(), ManagerCustomerActivity.class);
             //EditText editText = (EditText) findViewById(R.id.email);
             //String message = editText.getText().toString();
@@ -357,22 +361,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             startActivity(intent);
         }
 
-        /*
-        private  void createUser() {
-            //
-            FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(getApplicationContext());
-            SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-            // Create a new map of values, where column names are the keys
-            ContentValues values = new ContentValues();
-            values.put(FeedReaderUser.FeedUser.EMAIL, mEmail);
-            values.put(FeedReaderUser.FeedUser.PASSWORD, mPassword);
-            values.put(FeedReaderUser.FeedUser.ROLE, 1);
-
-            // Insert the new row, returning the primary key value of the new row
-            long newRowId = db.insert(FeedReaderUser.FeedUser.TABLE_NAME, null, values);
-        }
-        */
     }
 }
 

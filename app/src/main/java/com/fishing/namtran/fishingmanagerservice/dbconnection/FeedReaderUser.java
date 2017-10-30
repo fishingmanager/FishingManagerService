@@ -14,6 +14,6 @@ public final class FeedReaderUser {
         public static final String TABLE_NAME = "user";
         public static final String EMAIL = "email";
         public static final String PASSWORD = "password";
-        public static final String ROLE = "0";
+        public static final String ROLE = "role";
     }
 }
