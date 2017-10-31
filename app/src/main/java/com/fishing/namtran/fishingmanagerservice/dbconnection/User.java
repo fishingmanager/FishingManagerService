@@ -1,35 +1,19 @@
 package com.fishing.namtran.fishingmanagerservice.dbconnection;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-
-import static com.fishing.namtran.fishingmanagerservice.dbconnection.FeedReaderUser.*;
+import android.provider.BaseColumns;
 
 /**
- * Created by Nam Tran on 10/30/2017.
+ * Created by nam.tran on 10/18/2017.
  */
 
-public class User {
+public final class User {
+    private User() {}
 
-    public void createUser(Context context, String mEmail, String mPassword, String role) {
-        //
-        FeedReaderDbHelper mDbHelper;
-        mDbHelper = new FeedReaderDbHelper(context);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(FeedUser.EMAIL, mEmail);
-        values.put(FeedUser.PASSWORD, mPassword);
-        values.put(FeedUser.ROLE, role);
-
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(FeedUser.TABLE_NAME, null, values);
-
-        //close connection
-        db.close();
+    /* Inner class that defines the table contents */
+    public static class Properties implements BaseColumns {
+        public static final String TABLE_NAME = "user";
+        public static final String EMAIL = "email";
+        public static final String PASSWORD = "password";
+        public static final String ROLE = "role";
     }
 }
-//https://stackoverflow.com/questions/19194576/how-do-i-view-the-sqlite-database-on-an-android-device
-//https://www.androidhive.info/2012/08/android-session-management-using-shared-preferences/

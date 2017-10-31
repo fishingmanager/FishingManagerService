@@ -3,6 +3,7 @@ package com.fishing.namtran.fishingmanagerservice;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -30,7 +31,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.fishing.namtran.fishingmanagerservice.dbconnection.SessionManagement;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.User;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.UserManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +72,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //Check login
+        SessionManagement session = new SessionManagement(getApplicationContext());
+        if(session.isLoggedIn())
+        {
+            Intent intent = new Intent(getApplicationContext(), ManagerCustomerActivity.class);
+            startActivity(intent);
+        }
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -337,9 +349,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 finish();
-                User user = new User();
-                user.createUser(getApplicationContext(), mEmail, mPassword, "0");
-                redirect();
+                UserManager user = new UserManager(getApplicationContext());
+                if(user.UserLogin(mEmail, mPassword))
+                {
+                    redirect();
+                }
+                else
+                {
+                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                    mPasswordView.requestFocus();
+                }
+                //user.createUser(mEmail, mPassword, "0");
+                //redirect();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -353,7 +374,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         /** Called when the user taps the Send button */
-        private void redirect() {
+        public void redirect() {
             Intent intent = new Intent(getApplicationContext(), ManagerCustomerActivity.class);
             //EditText editText = (EditText) findViewById(R.id.email);
             //String message = editText.getText().toString();
