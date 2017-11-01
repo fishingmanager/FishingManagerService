@@ -4,10 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -71,15 +73,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         //Check login
         SessionManagement session = new SessionManagement(getApplicationContext());
         if(session.isLoggedIn())
         {
-            Intent intent = new Intent(getApplicationContext(), ManagerCustomerActivity.class);
-            startActivity(intent);
+            Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
         }
+
+        setContentView(R.layout.activity_login);
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -152,7 +154,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -175,7 +176,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -348,16 +353,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                finish();
                 UserManager user = new UserManager(getApplicationContext());
                 if(user.UserLogin(mEmail, mPassword))
                 {
-                    redirect();
+                    finish();
+                    Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else
                 {
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-                    mPasswordView.requestFocus();
+                    Utils.Alert(LoginActivity.this, getString(R.string.invalid_account));
                 }
                 //user.createUser(mEmail, mPassword, "0");
                 //redirect();
@@ -372,16 +376,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
-
-        /** Called when the user taps the Send button */
-        public void redirect() {
-            Intent intent = new Intent(getApplicationContext(), ManagerCustomerActivity.class);
-            //EditText editText = (EditText) findViewById(R.id.email);
-            //String message = editText.getText().toString();
-            //intent.putExtra(EXTRA_MESSAGE, message);
-            startActivity(intent);
-        }
-
 
     }
 }

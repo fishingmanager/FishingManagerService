@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.fishing.namtran.fishingmanagerservice.dbconnection.SessionManagement;
 import com.inqbarna.tablefixheaders.TableFixHeaders;
 import com.fishing.namtran.fishingmanagerservice.adapters.TableFixHeadersAdapterFactory;
 
@@ -39,6 +40,7 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        /*
         //noinspection SimplifiableIfStatement
         if (id == R.id.table_original) {
             createTable(TableFixHeadersAdapterFactory.ORIGINAL);
@@ -48,6 +50,13 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
             return true;
         } else if (id == R.id.table_original_sortable) {
             createTable(TableFixHeadersAdapterFactory.ORIGINAL_SORTABLE);
+            return true;
+        }
+        */
+
+        if (id == R.id.logout) {
+            SessionManagement session = new SessionManagement(getApplicationContext());
+            session.logoutUser();
             return true;
         }
 

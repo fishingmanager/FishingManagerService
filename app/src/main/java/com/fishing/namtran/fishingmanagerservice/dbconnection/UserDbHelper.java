@@ -15,7 +15,14 @@ public class UserDbHelper extends SQLiteOpenHelper {
                     User.Properties._ID + " INTEGER PRIMARY KEY," +
                     User.Properties.ROLE + " INTEGER," +
                     User.Properties.EMAIL + " TEXT," +
-                    User.Properties.PASSWORD + " TEXT)";
+                    User.Properties.PASSWORD + " TEXT); ";
+
+    private static final String SQL_CREATE_RECORDS =
+            "INSERT INTO " + User.Properties.TABLE_NAME + " (" +
+                    User.Properties._ID + "," +
+                    User.Properties.ROLE + "," +
+                    User.Properties.EMAIL + "," +
+                    User.Properties.PASSWORD + ") VALUES ( 1, 0, 'nam@gmail.com', '12341234');";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + User.Properties.TABLE_NAME;
@@ -25,6 +32,7 @@ public class UserDbHelper extends SQLiteOpenHelper {
     }
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        //db.execSQL(SQL_CREATE_RECORDS);
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is

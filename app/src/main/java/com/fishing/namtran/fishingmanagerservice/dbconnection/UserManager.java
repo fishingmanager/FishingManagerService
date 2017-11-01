@@ -96,6 +96,7 @@ public class UserManager {
 
         // Filter results WHERE "title" = 'My Title'
         String selection = User.Properties.EMAIL + " = ? AND " + User.Properties.PASSWORD + " = ?";
+        //String selection = User.Properties.EMAIL + " = '" + email + "' AND " + User.Properties.PASSWORD + " = '" + password + "'";
         String[] selectionArgs = { email, password };
 
         // How you want the results sorted in the resulting Cursor
@@ -112,9 +113,9 @@ public class UserManager {
                 sortOrder                                 // The sort order
         );
 
-        if(cursor.moveToNext()) {
-            if(email == cursor.getString(cursor.getColumnIndexOrThrow(User.Properties.EMAIL))
-                    && password == cursor.getString(cursor.getColumnIndexOrThrow(User.Properties.PASSWORD))) {
+        while(cursor.moveToNext()) {
+            if(email.equals(cursor.getString(cursor.getColumnIndexOrThrow(User.Properties.EMAIL)))
+                    && password.equals(cursor.getString(cursor.getColumnIndexOrThrow(User.Properties.PASSWORD)))) {
                 //
                 SessionManagement session = new SessionManagement(context);
                 session.createLoginSession(email);

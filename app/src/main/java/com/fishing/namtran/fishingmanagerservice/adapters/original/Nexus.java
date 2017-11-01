@@ -36,6 +36,23 @@ public class Nexus {
                 ram };
     }
 
+    public Nexus(String fullname, String mobile, String dateIn, String dateOut, String feedType, String keepHours, String noKeepHours, String keepFish, String takeFish, String totalFish, String totalMoney, String note) {
+        this.type = null;
+        data = new String[] {
+                fullname,
+                mobile,
+                dateIn,
+                dateOut,
+                feedType,
+                keepHours,
+                noKeepHours,
+                keepFish,
+                takeFish,
+                totalFish,
+                totalMoney,
+                note };
+    }
+
     public boolean isSection() {
         return data == null;
     }

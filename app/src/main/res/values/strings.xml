@@ -10,13 +10,25 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+    <string name="invalid_account">This account was be error, please re-enter again or another account!</string>
+    <string name="fullname">Ten KH</string>
+    <string name="mobile">Mobile</string>
+    <string name="date_in">Gio Vao</string>
+    <string name="date_out">Gio ra</string>
+    <string name="feed_type">Moi Cau (Ca chep/gram)</string>
+    <string name="keep_hours">Gui Gio</string>
+    <string name="no_keep_hours">Tra Gio</string>
+    <string name="keep_fish">Gui Ca (kg)</string>
+    <string name="take_fish">Lay Ca (kg)</string>
+    <string name="total_fish">Tong Ca</string>
+    <string name="total_money">Tong Tien</string>
+    <string name="note">Ghi Chu</string>
 
     <string name="customer_manager">Quan ly khach hang</string>
     <string name="report">Bao cao</string>
     <string name="add_customer">Them KH</string>
+    <string name="logout">Thoat</string>
 
     <string name="table_original">Table Original</string>
     <string name="table_basic">Table Basic</string>

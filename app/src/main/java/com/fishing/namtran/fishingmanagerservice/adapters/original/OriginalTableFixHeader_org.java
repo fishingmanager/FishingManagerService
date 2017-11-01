@@ -3,9 +3,8 @@ package com.fishing.namtran.fishingmanagerservice.adapters.original;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
 
-import com.fishing.namtran.fishingmanagerservice.R;
-import com.inqbarna.tablefixheaders.adapters.BaseTableAdapter;
 import com.fishing.namtran.fishingmanagerservice.adapters.TableFixHeaderAdapter;
+import com.inqbarna.tablefixheaders.adapters.BaseTableAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,11 +13,11 @@ import java.util.List;
 /**
  * Created by miguel on 12/02/2016.
  */
-public class OriginalTableFixHeader {
+public class OriginalTableFixHeader_org {
     private Context context;
 
 
-    public OriginalTableFixHeader(Context context) {
+    public OriginalTableFixHeader_org(Context context) {
         this.context = context;
     }
 
@@ -26,7 +25,7 @@ public class OriginalTableFixHeader {
         OriginalTableFixHeaderAdapter adapter = new OriginalTableFixHeaderAdapter(context);
         List<Nexus> body = getBody();
 
-        adapter.setFirstHeader(context.getString(R.string.fullname));
+        adapter.setFirstHeader("Name");
         adapter.setHeader(getHeader());
         adapter.setFirstBody(body);
         adapter.setBody(body);
@@ -68,17 +67,12 @@ public class OriginalTableFixHeader {
 
     private List<String> getHeader() {
         final String headers[] = {
-                context.getString(R.string.mobile),
-                context.getString(R.string.date_in),
-                context.getString(R.string.date_out),
-                context.getString(R.string.feed_type),
-                context.getString(R.string.keep_hours),
-                context.getString(R.string.no_keep_hours),
-                context.getString(R.string.keep_fish),
-                context.getString(R.string.take_fish),
-                context.getString(R.string.total_fish),
-                context.getString(R.string.total_money),
-                context.getString(R.string.note)
+                "Company",
+                "Version",
+                "API",
+                "Storage",
+                "Size",
+                "RAM",
         };
 
         return Arrays.asList(headers);
@@ -86,17 +80,23 @@ public class OriginalTableFixHeader {
 
     private List<Nexus> getBody() {
         List<Nexus> items = new ArrayList<>();
-        items.add(new Nexus("Ngay:"));
-        items.add(new Nexus("Tran Van A", "0909686767", "20017/11/01 17:25:59", "20017/11/01 21:25:59", "2", "02", "01", "08", "06", "02", "300.000", "No"));
+        items.add(new Nexus("Mobiles"));
+        items.add(new Nexus("Nexus One", "HTC", "Gingerbread", "10", "512 MB", "3.7\"", "512 MB"));
+        items.add(new Nexus("Nexus S", "Samsung", "Gingerbread", "10", "16 GB", "4\"", "512 MB"));
+        items.add(new Nexus("Galaxy Nexus (16 GB)", "Samsung", "Ice cream Sandwich", "15", "16 GB", "4.65\"", "1 GB"));
+        items.add(new Nexus("Galaxy Nexus (32 GB)", "Samsung", "Ice cream Sandwich", "15", "32 GB", "4.65\"", "1 GB"));
+        items.add(new Nexus("Nexus 4 (8 GB)", "LG", "Jelly Bean", "17", "8 GB", "4.7\"", "2 GB"));
+        items.add(new Nexus("Nexus 4 (16 GB)", "LG", "Jelly Bean", "17", "16 GB", "4.7\"", "2 GB"));
 
-        /*
-        items.add(new Nexus("Tran Van B", "0909686767", "20017/11/01 17:25:59", "20017/11/01 21:25:59", "2", "02", "01", "08", "06", "02", "300.000", "No"));
-        items.add(new Nexus("Tran Van C", "0909686767", "20017/11/01 17:25:59", "20017/11/01 21:25:59", "2", "02", "01", "08", "06", "02", "300.000", "No"));
-        items.add(new Nexus("Tran Van D", "0909686767", "20017/11/01 17:25:59", "20017/11/01 21:25:59", "2", "02", "01", "08", "06", "02", "300.000", "No"));
-        items.add(new Nexus("Tran Van E", "0909686767", "20017/11/01 17:25:59", "20017/11/01 21:25:59", "2", "02", "01", "08", "06", "02", "300.000", "No"));
-        */
+        items.add(new Nexus("Tablets"));
+        items.add(new Nexus("Nexus 7 (16 GB)", "Asus", "Jelly Bean", "16", "16 GB", "7\"", "1 GB"));
+        items.add(new Nexus("Nexus 7 (32 GB)", "Asus", "Jelly Bean", "16", "32 GB", "7\"", "1 GB"));
+        items.add(new Nexus("Nexus 10 (16 GB)", "Samsung", "Jelly Bean", "17", "16 GB", "10\"", "2 GB"));
+        items.add(new Nexus("Nexus 10 (32 GB)", "Samsung", "Jelly Bean", "17", "32 GB", "10\"", "2 GB"));
+
+        items.add(new Nexus("Others"));
+        items.add(new Nexus("Nexus Q", "--", "Honeycomb", "13", "--", "--", "--"));
 
         return items;
     }
-
 }
