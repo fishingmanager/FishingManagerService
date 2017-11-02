@@ -3,13 +3,12 @@ package com.fishing.namtran.fishingmanagerservice;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -24,6 +23,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -32,20 +32,19 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.fishing.namtran.fishingmanagerservice.dbconnection.SessionManagement;
-import com.fishing.namtran.fishingmanagerservice.dbconnection.User;
-import com.fishing.namtran.fishingmanagerservice.dbconnection.UserManager;
+import android.widget.TimePicker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class AddNewCustomerActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -65,50 +64,74 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
+    private AutoCompleteTextView mFullNameView;
+    private EditText mMobileView;
+    private EditText mDatInView;
+    private EditText mDateOutView;
     private View mProgressView;
-    private View mLoginFormView;
+    private View mSubmitFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //Check login
-        SessionManagement session = new SessionManagement(getApplicationContext());
-        if(session.isLoggedIn())
-        {
-            Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
-        }
-
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_add_new_customer);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        mMobileView = (EditText) findViewById(R.id.password);
+        mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
+        mDatInView = (EditText) findViewById(R.id.date_in);
+        mDateOutView = (EditText) findViewById(R.id.date_out);
+        mSubmitFormView = findViewById(R.id.add_new_customer_form);
+        mProgressView = findViewById(R.id.add_new_customer_progress);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        //populateAutoComplete();
+        mMobileView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptSubmit();
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mAddNewCustomerButton = (Button) findViewById(R.id.add_new_customer_button);
+        mAddNewCustomerButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptSubmit();
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        //Focus date in
+        mDatInView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                //ShowTimePickerDialog(view, text);
+                //Utils.GetTime(getBaseContext(), (EditText) findViewById(R.id.date_in));
+                if(hasFocus) {
+                    EditText editText = (EditText) mDatInView;
+                    GetTimePicker(editText);
+                    //mDateOutView.requestFocus();
+                }
+            }
+        });
+
+        /*
+        //Focus date out
+        mDateOutView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus) {
+                    EditText editText = (EditText) mDateOutView;
+                    GetTimePicker(editText);
+                    //mDatInView.requestFocus();
+                }
+            }
+        });
+        */
+        mDateOutView.setEnabled(false);
     }
 
     private void populateAutoComplete() {
@@ -119,6 +142,40 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         getLoaderManager().initLoader(0, null, this);
     }
 
+    //private void ShowTimePickerDialog(View v, EditText text) {
+    //    DialogFragment newFragment = new TimePickerFragment();
+    //    newFragment.show(getSupportFragmentManager(), "timePicker");
+    //}
+
+    public void GetTimePicker(final Object objText)
+    {
+        //https://www.journaldev.com/9976/android-date-time-picker-dialog
+        // Get Current Time
+        final Calendar c = Calendar.getInstance();
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        EditText editText = (EditText) objText;
+                        editText.setText(hourOfDay + ":" + minute);
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
     private boolean mayRequestContacts() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -127,7 +184,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(mFullNameView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -159,41 +216,40 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void attemptSubmit() {
         if (mAuthTask != null) {
             return;
         }
 
         // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
+        mFullNameView.setError(null);
+        mMobileView.setError(null);
+        mDatInView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String fullname = mFullNameView.getText().toString();
+        String mobile = mMobileView.getText().toString();
+        String dateIn = mDatInView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
-            cancel = true;
-        } else if (!isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+        // Check for a valid mobile, if the user entered one.
+        if (!TextUtils.isEmpty(mobile) && !isMobileValid(mobile)) {
+            mMobileView.setError(getString(R.string.error_invalid_mobile));
+            focusView = mMobileView;
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(fullname)) {
+            mFullNameView.setError(getString(R.string.error_field_required));
+            focusView = mDatInView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        }
+
+        if (TextUtils.isEmpty(dateIn)) {
+            mDatInView.setError(getString(R.string.error_field_required));
+            focusView = mDatInView;
             cancel = true;
         }
 
@@ -205,19 +261,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(fullname, mobile);
             mAuthTask.execute((Void) null);
         }
     }
 
-    private boolean isEmailValid(String email) {
+    private boolean isMobileValid(String mobile) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return mobile.length() >= 4;
     }
 
     /**
@@ -231,12 +282,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+            mSubmitFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mSubmitFormView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    mSubmitFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
@@ -252,7 +303,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mSubmitFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -293,10 +344,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(AddNewCustomerActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        mFullNameView.setAdapter(adapter);
     }
 
 
@@ -353,20 +404,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                UserManager user = new UserManager(getApplicationContext());
-                //user.createUser(mEmail, mPassword, "0");
-                if(user.UserLogin(mEmail, mPassword))
-                {
-                    finish();
-                    Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
-                }
-                else
-                {
-                    Utils.Alert(LoginActivity.this, getString(R.string.invalid_account));
-                }
+                finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                mMobileView.setError(getString(R.string.error_incorrect_password));
+                mMobileView.requestFocus();
             }
         }
 
@@ -375,7 +416,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
-
     }
 }
 

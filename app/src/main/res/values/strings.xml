@@ -24,6 +24,8 @@
     <string name="total_fish">Tong Ca</string>
     <string name="total_money">Tong Tien</string>
     <string name="note">Ghi Chu</string>
+    <string name="action_submit_short">OK</string>
+    <string name="error_invalid_mobile">Mobile qua ngan, it nhat la 4 so</string>
 
     <string name="customer_manager">Quan ly khach hang</string>
     <string name="report">Bao cao</string>
@@ -34,4 +36,8 @@
     <string name="table_basic">Table Basic</string>
     <string name="table_original_sortable">Table Original Sortable</string>
     <string name="order_sections_asc">Order sections ASC</string>
+    <string name="title_activity_add_new_customer">Add New Customer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

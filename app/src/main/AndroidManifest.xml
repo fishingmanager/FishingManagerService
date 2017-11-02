@@ -24,6 +24,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ManagerCustomerActivity" />
+        <activity
+            android:name=".AddNewCustomerActivity"
+            android:label="@string/title_activity_add_new_customer"></activity>
     </application>
 
 </manifest>
