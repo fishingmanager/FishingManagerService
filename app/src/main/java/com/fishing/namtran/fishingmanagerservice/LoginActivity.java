@@ -78,8 +78,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         SessionManagement session = new SessionManagement(getApplicationContext());
         if(session.isLoggedIn())
         {
+            finish();
             Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
         }
+
+        //SessionManagement session = new SessionManagement(getApplicationContext());
+        //session.checkLogin();
 
         setContentView(R.layout.activity_login);
 

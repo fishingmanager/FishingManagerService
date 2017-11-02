@@ -6,14 +6,17 @@ package com.fishing.namtran.fishingmanagerservice.dbconnection;
 
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 import com.fishing.namtran.fishingmanagerservice.LoginActivity;
+import com.fishing.namtran.fishingmanagerservice.ManagerCustomerActivity;
+import com.fishing.namtran.fishingmanagerservice.Utils;
 
-public class SessionManagement {
+public class SessionManagement extends Activity {
     // Shared Preferences
     SharedPreferences pref;
 
@@ -74,6 +77,9 @@ public class SessionManagement {
 
             // Staring Login Activity
             _context.startActivity(i);
+        } else {
+            finish();
+            Utils.Redirect(_context, ManagerCustomerActivity.class);
         }
 
     }

@@ -18,6 +18,14 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Check login
+        SessionManagement session = new SessionManagement(getApplicationContext());
+        if(session.isLoggedIn())
+        {
+            Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
+        }
+
         setContentView(R.layout.activity_manager_customer);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
