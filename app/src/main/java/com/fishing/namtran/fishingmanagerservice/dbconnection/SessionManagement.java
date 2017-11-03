@@ -77,11 +77,7 @@ public class SessionManagement extends Activity {
 
             // Staring Login Activity
             _context.startActivity(i);
-        } else {
-            finish();
-            Utils.Redirect(_context, ManagerCustomerActivity.class);
         }
-
     }
 
     /**

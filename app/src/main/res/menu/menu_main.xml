@@ -25,8 +25,15 @@
         android:title="@string/customer_manager"/>
 
     <item
-        android:id="@+id/logout"
+        android:id="@+id/settings"
         android:orderInCategory="4"
+        app:showAsAction="never"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="@string/settings"/>
+
+    <item
+        android:id="@+id/logout"
+        android:orderInCategory="5"
         app:showAsAction="never"
         android:icon="@android:drawable/ic_notification_clear_all"
         android:title="@string/logout"/>

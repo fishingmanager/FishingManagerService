@@ -50,14 +50,14 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/password"
+                    android:id="@+id/mobile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/mobile"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_submit_short"
                     android:imeOptions="actionUnspecified"
-                    android:inputType="text"
+                    android:inputType="number"
                     android:maxLines="1"
                     android:singleLine="true" />
 
@@ -97,13 +97,155 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/feed_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/feed_type"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/keep_hours"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/keep_hours"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/no_keep_hours"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/no_keep_hours"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/keep_fish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/keep_fish"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/take_fish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/take_fish"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/total_fish"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/total_fish"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/total_money"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/total_money"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="1"
+                    android:inputType="number"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/note"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
+                    android:maxLines="5" />
+
+            </android.support.design.widget.TextInputLayout>
+
             <Button
                 android:id="@+id/add_new_customer_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
+                android:text="@string/title_activity_add_new_customer"
                 android:textStyle="bold" />
 
         </LinearLayout>

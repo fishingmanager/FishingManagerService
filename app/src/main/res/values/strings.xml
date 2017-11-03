@@ -11,7 +11,9 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
-    <string name="invalid_account">This account was be error, please re-enter again or another account!</string>
+    <string name="invalid_account">Tai khoan nay bi loi. Vui long nhap lai hoac thu voi tai khoan khac!</string>
+    <string name="action_error">Luu du lieu khong thanh cong!</string>
+
     <string name="fullname">Ten KH</string>
     <string name="mobile">Mobile</string>
     <string name="date_in">Gio Vao</string>
@@ -24,6 +26,8 @@
     <string name="total_fish">Tong Ca</string>
     <string name="total_money">Tong Tien</string>
     <string name="note">Ghi Chu</string>
+    <string name="package_fishing">Suat (Gio)</string>
+    <string name="price">Gia Ca</string>
     <string name="action_submit_short">OK</string>
     <string name="error_invalid_mobile">Mobile qua ngan, it nhat la 4 so</string>
 
@@ -31,13 +35,15 @@
     <string name="report">Bao cao</string>
     <string name="add_customer">Them KH</string>
     <string name="logout">Thoat</string>
+    <string name="settings">Cai Dat</string>
 
     <string name="table_original">Table Original</string>
     <string name="table_basic">Table Basic</string>
     <string name="table_original_sortable">Table Original Sortable</string>
     <string name="order_sections_asc">Order sections ASC</string>
-    <string name="title_activity_add_new_customer">Add New Customer</string>
+    <string name="title_activity_add_new_customer">Them Khach Hang</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>

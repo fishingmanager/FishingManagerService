@@ -26,7 +26,11 @@
         <activity android:name=".ManagerCustomerActivity" />
         <activity
             android:name=".AddNewCustomerActivity"
-            android:label="@string/title_activity_add_new_customer"></activity>
+            android:label="@string/title_activity_add_new_customer"
+            android:noHistory="true" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

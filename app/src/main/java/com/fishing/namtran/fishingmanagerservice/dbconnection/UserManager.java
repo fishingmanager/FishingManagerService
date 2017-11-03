@@ -15,9 +15,9 @@ public class UserManager {
     private SQLiteDatabase db;
     private Context context;
 
-    public UserManager(Context contextName)
+    public UserManager(Context context)
     {
-        context = contextName;
+        this.context = context;
     }
 
     public void createUser(String mEmail, String mPassword, String role) {

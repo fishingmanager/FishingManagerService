@@ -65,12 +65,15 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         if (id == R.id.logout) {
             SessionManagement session = new SessionManagement(getApplicationContext());
             session.logoutUser();
+            finish();
             return true;
         } else if (id == R.id.add_customer) {
             Utils.Redirect(getApplicationContext(), AddNewCustomerActivity.class);
             return true;
+        } else if (id == R.id.settings) {
+            Utils.Redirect(getApplicationContext(), SettingsActivity.class);
+            return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }

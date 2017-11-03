@@ -8,26 +8,28 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by nam.tran on 10/18/2017.
  */
 
-public class UserDbHelper extends SQLiteOpenHelper {
+public class SettingsDbHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE IF NOT EXISTS " + User.Properties.TABLE_NAME + " (" +
-                    User.Properties._ID + " INTEGER PRIMARY KEY," +
-                    User.Properties.ROLE + " INTEGER," +
-                    User.Properties.EMAIL + " TEXT," +
-                    User.Properties.PASSWORD + " TEXT); ";
+            "CREATE TABLE IF NOT EXISTS " + Settings.Properties.TABLE_NAME + " (" +
+                    Settings.Properties._ID + " INTEGER PRIMARY KEY," +
+                    Settings.Properties.PACKAGE_FISHING + " INTEGER," +
+                    Settings.Properties.PRICE_FISHING + " INTEGER," +
+                    Settings.Properties.PACKAGE_FEED_TYPE + " INTEGER," +
+                    Settings.Properties.PRICE_FEED_TYPE + " INTEGER); ";
 
     private static final String SQL_CREATE_RECORDS =
-            "INSERT INTO " + User.Properties.TABLE_NAME + " (" +
-                    User.Properties._ID + "," +
-                    User.Properties.ROLE + "," +
-                    User.Properties.EMAIL + "," +
-                    User.Properties.PASSWORD + ") VALUES ( 1, 0, 'nam@gmail.com', '12341234');";
+            "INSERT INTO " + Settings.Properties.TABLE_NAME + " (" +
+                    Settings.Properties._ID + "," +
+                    Settings.Properties.PACKAGE_FISHING + "," +
+                    Settings.Properties.PRICE_FISHING + "," +
+                    Settings.Properties.PACKAGE_FEED_TYPE + "," +
+                    Settings.Properties.PRICE_FEED_TYPE + ") VALUES ( 1, 4, 200000, 1, 15000 );";
 
     private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + User.Properties.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + Settings.Properties.TABLE_NAME;
 
-    public UserDbHelper(Context context) {
+    public SettingsDbHelper(Context context) {
         super(context, DbConfig.DATABASE_NAME, null, DbConfig.DATABASE_VERSION);
     }
     public void onCreate(SQLiteDatabase db) {
