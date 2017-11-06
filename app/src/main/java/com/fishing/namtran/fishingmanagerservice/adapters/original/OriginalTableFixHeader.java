@@ -9,10 +9,14 @@ import com.fishing.namtran.fishingmanagerservice.R;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 import com.inqbarna.tablefixheaders.adapters.BaseTableAdapter;
 import com.fishing.namtran.fishingmanagerservice.adapters.TableFixHeaderAdapter;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,21 +99,51 @@ public class OriginalTableFixHeader {
 
     private List<Nexus> getBody() {
         List<Nexus> items = new ArrayList<>();
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        Date date = new Date();
-        items.add(new Nexus("Ngay: " + dateFormat.format(date)));
+        DateFormat currentDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-        FishingManager fishings = new FishingManager(context);
-        Cursor cursor = fishings.getFishingEntries();
+        Date currentDate = new Date();
+        items.add(new Nexus("Ngay: " + currentDateFormat.format(currentDate)));
 
-        while (cursor.moveToNext()) {
-            items.add(new Nexus(
-                    cursor.getString(cursor.getColumnIndexOrThrow(Customers.Properties._ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(Customers.Properties.FULLNAME)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(Customers.Properties.MOBILE)), "20017/11/01 17:25:59", "20017/11/01 21:25:59", "15000", "2", "1", "3", "6", "2", "8", "300.000", "No"));
+        Cursor fishings = (new FishingManager(context)).getFishingEntries();
+        Cursor settings = (new SettingsManager(context)).getSettingEntry("1");
+        String feedType = null;
+        String totalHours = null;
+
+        while (settings.moveToNext()) {
+            feedType = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE));
         }
+        settings.close();
 
-        cursor.close();
+        while (fishings.moveToNext()) {
+            String dateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
+            String dateOut = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
+
+            try {
+                long time = (dateFormat.parse(dateOut).getTime() - dateFormat.parse(dateIn).getTime());
+                Date restDate = new Date(time);
+                totalHours = dateFormat.format(restDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            items.add(new Nexus(
+                    fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties._ID)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.FULLNAME)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.MOBILE)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT)),
+                    feedType,
+                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_HOURS)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.NO_KEEP_HOURS)),
+                    totalHours,
+                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_FISH)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TAKE_FISH)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH)),
+                    "300.000",
+                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
+        }
+        fishings.close();
         return items;
     }
 
