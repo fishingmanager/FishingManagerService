@@ -64,6 +64,8 @@ public class OriginalTableFixHeaderAdapter extends TableFixHeaderAdapter<
                 (int) context.getResources().getDimension(R.dimen._80dp),
                 (int) context.getResources().getDimension(R.dimen._80dp),
                 (int) context.getResources().getDimension(R.dimen._80dp),
+                (int) context.getResources().getDimension(R.dimen._80dp),
+                (int) context.getResources().getDimension(R.dimen._80dp),
                 (int) context.getResources().getDimension(R.dimen._110dp),
                 (int) context.getResources().getDimension(R.dimen._170dp)
         };

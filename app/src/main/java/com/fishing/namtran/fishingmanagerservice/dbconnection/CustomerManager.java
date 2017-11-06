@@ -21,16 +21,16 @@ public class CustomerManager {
 
     public long createCustomer(String mFullName, String mMobile) {
 
-        CustomerDbHelper mDbHelper = new CustomerDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(Customer.Properties.FULLNAME, mFullName);
-        values.put(Customer.Properties.MOBILE, mMobile);
+        values.put(Customers.Properties.FULLNAME, mFullName);
+        values.put(Customers.Properties.MOBILE, mMobile);
 
         // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(Customer.Properties.TABLE_NAME, null, values);
+        long newRowId = db.insert(Customers.Properties.TABLE_NAME, null, values);
 
         //close connection
         db.close();
@@ -40,19 +40,19 @@ public class CustomerManager {
     }
 
     public void updateCustomer(String mFullName, String mMobile) {
-        CustomerDbHelper mDbHelper = new CustomerDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(Customer.Properties.FULLNAME, mFullName);
+        values.put(Customers.Properties.FULLNAME, mFullName);
 
         // Which row to update, based on the title
-        String selection = Customer.Properties.MOBILE + " LIKE ?";
+        String selection = Customers.Properties.MOBILE + " LIKE ?";
         String[] selectionArgs = { mMobile };
 
         int count = db.update(
-                Customer.Properties.TABLE_NAME,
+                Customers.Properties.TABLE_NAME,
                 values,
                 selection,
                 selectionArgs);

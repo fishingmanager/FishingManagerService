@@ -17,6 +17,7 @@ import android.widget.EditText;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.UserManager;
 
 /**
  * A login screen that offers login via email/password.
@@ -32,7 +33,6 @@ public class SettingsActivity extends AppCompatActivity {
     private EditText mPriceFishingView;
     private EditText mPackageFishingView;
     private EditText mPriceFeedTypeView;
-    private EditText mPackageFeedTypeView;
     private View mProgressView;
     private View mSubmitFormView;
 
@@ -45,7 +45,6 @@ public class SettingsActivity extends AppCompatActivity {
         mPriceFishingView = (EditText) findViewById(R.id.price_fishing);
         mPackageFishingView = (EditText) findViewById(R.id.package_fishing);
         mPriceFeedTypeView = (EditText) findViewById(R.id.price_feed_type);
-        mPackageFeedTypeView = (EditText) findViewById(R.id.package_feed_type);
         mSubmitFormView = findViewById(R.id.settings_form);
         mProgressView = findViewById(R.id.settings_progress);
 
@@ -53,11 +52,11 @@ public class SettingsActivity extends AppCompatActivity {
         SettingsManager setting = new SettingsManager(getApplicationContext());
         Cursor cursor = setting.getSettingEntry("1");
         while(cursor.moveToNext()) {
-            mPackageFishingView.setText(cursor.getInt(cursor.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING)));
-            mPriceFishingView.setText(cursor.getInt(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING)));
-            mPackageFeedTypeView.setText(cursor.getInt(cursor.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FEED_TYPE)));
-            mPriceFeedTypeView.setText(cursor.getInt(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE)));
+            mPackageFishingView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING)));
+            mPriceFishingView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING)));
+            mPriceFeedTypeView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE)));
         }
+        cursor.close();
 
         Button mSettingsButton = (Button) findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(new OnClickListener() {
@@ -79,13 +78,11 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         // Reset errors.
-        mPackageFeedTypeView.setError(null);
         mPackageFishingView.setError(null);
         mPriceFeedTypeView.setError(null);
         mPriceFishingView.setError(null);
 
         // Store values at the time of the login attempt.
-        String packageFeedType = mPackageFeedTypeView.getText().toString();
         String packageFishing = mPackageFishingView.getText().toString();
         String priceFishType = mPriceFeedTypeView.getText().toString();
         String priceFishing = mPriceFishingView.getText().toString();
@@ -105,12 +102,6 @@ public class SettingsActivity extends AppCompatActivity {
             cancel = true;
         }
         else
-        if (TextUtils.isEmpty(packageFeedType)) {
-            mPackageFeedTypeView.setError(getString(R.string.error_field_required));
-            focusView = mPackageFeedTypeView;
-            cancel = true;
-        }
-        else
         if (TextUtils.isEmpty(priceFishType)) {
             mPriceFeedTypeView.setError(getString(R.string.error_field_required));
             focusView = mPriceFeedTypeView;
@@ -125,7 +116,7 @@ public class SettingsActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mSettingsTask = new SettingsActionTask(packageFishing, priceFishing, packageFeedType, priceFishType);
+            mSettingsTask = new SettingsActionTask(packageFishing, priceFishing, priceFishType);
             mSettingsTask.execute((Void) null);
         }
     }
@@ -173,13 +164,11 @@ public class SettingsActivity extends AppCompatActivity {
 
         private final String mPackageFishing;
         private final String mPriceFishing;
-        private final String mPackageFeedType;
         private final String mPriceFeedType;
 
-        SettingsActionTask(String packageFishing, String priceFishing, String packageFeedType, String priceFeedType) {
+        SettingsActionTask(String packageFishing, String priceFishing, String priceFeedType) {
             mPackageFishing = packageFishing;
             mPriceFishing = priceFishing;
-            mPackageFeedType = packageFeedType;
             mPriceFeedType = priceFeedType;
         }
 
@@ -200,7 +189,7 @@ public class SettingsActivity extends AppCompatActivity {
             showProgress(false);
             SettingsManager setting = new SettingsManager(getApplicationContext());
             if (success) {
-                if(setting.updateSettings("1", mPackageFishing, mPriceFishing, mPackageFeedType, mPriceFeedType))
+                if(setting.updateSettings("1", mPackageFishing, mPriceFishing, mPriceFeedType))
                 {
                     finish();
                 }

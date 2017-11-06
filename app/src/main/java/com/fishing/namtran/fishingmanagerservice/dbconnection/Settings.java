@@ -15,7 +15,6 @@ public final class Settings {
         public static final String TABLE_NAME = "settings";
         public static final String PACKAGE_FISHING = "package_fishing";
         public static final String PRICE_FISHING = "price_fishing";
-        public static final String PACKAGE_FEED_TYPE = "package_feed_type";
         public static final String PRICE_FEED_TYPE = "price_feed_type";
     }
 }

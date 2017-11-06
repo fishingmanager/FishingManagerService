@@ -6,8 +6,8 @@ import android.provider.BaseColumns;
  * Created by nam.tran on 10/18/2017.
  */
 
-public final class Customer {
-    private Customer() {}
+public final class Customers {
+    private Customers() {}
 
     /* Inner class that defines the table contents */
     public static class Properties implements BaseColumns {

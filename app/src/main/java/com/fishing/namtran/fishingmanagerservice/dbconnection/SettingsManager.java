@@ -19,19 +19,18 @@ public class SettingsManager {
         this.context = context;
     }
 
-    public boolean updateSettings(String mId, String mPackageFishing, String mPriceFishing, String mPackageFeedType, String mPriceFeedType) {
-        SettingsDbHelper mDbHelper = new SettingsDbHelper(context);
+    public boolean updateSettings(String mId, String mPackageFishing, String mPriceFishing, String mPriceFeedType) {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(Settings.Properties.PACKAGE_FISHING, mPackageFishing);
         values.put(Settings.Properties.PRICE_FISHING, mPriceFishing);
-        values.put(Settings.Properties.PACKAGE_FEED_TYPE, mPackageFeedType);
         values.put(Settings.Properties.PRICE_FEED_TYPE, mPriceFeedType);
 
         // Which row to update, based on the title
-        String selection = Settings.Properties._ID + " =";
+        String selection = Settings.Properties._ID + " = ?";
         String[] selectionArgs = { mId };
 
         int count = db.update(
@@ -48,7 +47,7 @@ public class SettingsManager {
     }
 
     public Cursor getSettingEntry(String mId) {
-        SettingsDbHelper mDbHelper = new SettingsDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
@@ -56,7 +55,6 @@ public class SettingsManager {
         String[] projection = {
                 Settings.Properties.PACKAGE_FISHING,
                 Settings.Properties.PRICE_FISHING,
-                Settings.Properties.PACKAGE_FEED_TYPE,
                 Settings.Properties.PRICE_FEED_TYPE,
         };
 
@@ -78,7 +76,6 @@ public class SettingsManager {
                 sortOrder                                 // The sort order
         );
 
-        cursor.close();
         return cursor;
     }
 

@@ -14,13 +14,15 @@
     <string name="invalid_account">Tai khoan nay bi loi. Vui long nhap lai hoac thu voi tai khoan khac!</string>
     <string name="action_error">Luu du lieu khong thanh cong!</string>
 
+    <string name="number_fishing">Ma So</string>
     <string name="fullname">Ten KH</string>
     <string name="mobile">Mobile</string>
     <string name="date_in">Gio Vao</string>
     <string name="date_out">Gio ra</string>
-    <string name="feed_type">Moi Cau (Ca chep/gram)</string>
+    <string name="feed_type">Moi Cau (Ca chep)</string>
     <string name="keep_hours">Gui Gio</string>
     <string name="no_keep_hours">Tra Gio</string>
+    <string name="total_hours">Tong Gio</string>
     <string name="keep_fish">Gui Ca (kg)</string>
     <string name="take_fish">Lay Ca (kg)</string>
     <string name="total_fish">Tong Ca</string>

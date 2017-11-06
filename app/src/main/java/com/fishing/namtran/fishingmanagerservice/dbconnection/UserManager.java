@@ -22,7 +22,7 @@ public class UserManager {
 
     public void createUser(String mEmail, String mPassword, String role) {
 
-        UserDbHelper mDbHelper = new UserDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
@@ -40,7 +40,7 @@ public class UserManager {
 
     public boolean checkUserExisted(String email)
     {
-        UserDbHelper mDbHelper = new UserDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
@@ -82,7 +82,7 @@ public class UserManager {
 
     public boolean UserLogin(String email, String password)
     {
-        UserDbHelper mDbHelper = new UserDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database

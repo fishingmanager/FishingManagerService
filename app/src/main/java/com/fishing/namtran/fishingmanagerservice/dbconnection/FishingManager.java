@@ -20,56 +20,42 @@ public class FishingManager {
 
     public void createFishingEntry(String mCustomerId, String mDateIn, String mDateOut, String mFeedType, String mKeepHours, String mNoKeepHours, String mKeepFish, String mTakeFish, String mTotalFish, String mTotalMoney, String mNote) {
 
-        FishingDbHelper mDbHelper = new FishingDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(Fishing.Properties.CUSTOMER_ID, mCustomerId);
-        values.put(Fishing.Properties.DATE_IN, mDateIn);
-        values.put(Fishing.Properties.DATE_OUT, mDateOut);
-        values.put(Fishing.Properties.FEED_TYPE, mFeedType);
-        values.put(Fishing.Properties.KEEP_HOURS, mKeepHours);
-        values.put(Fishing.Properties.NO_KEEP_HOURS, mNoKeepHours);
-        values.put(Fishing.Properties.KEEP_FISH, mKeepFish);
-        values.put(Fishing.Properties.TAKE_FISH, mTakeFish);
-        values.put(Fishing.Properties.TOTAL_FISH, mTotalFish);
-        values.put(Fishing.Properties.TOTAL_MONEY, mTotalMoney);
-        values.put(Fishing.Properties.NOTE, mNote);
+        values.put(Fishings.Properties.CUSTOMER_ID, mCustomerId);
+        values.put(Fishings.Properties.DATE_IN, mDateIn);
+        values.put(Fishings.Properties.DATE_OUT, mDateOut);
+        values.put(Fishings.Properties.NOTE, mNote);
 
         // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(Fishing.Properties.TABLE_NAME, null, values);
+        long newRowId = db.insert(Fishings.Properties.TABLE_NAME, null, values);
 
         //close connection
         db.close();
     }
 
-    public Cursor getFishingEntries() {
-        FishingDbHelper mDbHelper = new FishingDbHelper(context);
+    public Cursor getFishingAllEntries() {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                Fishing.Properties.CUSTOMER_ID,
-                Fishing.Properties.DATE_IN,
-                Fishing.Properties.DATE_OUT,
-                Fishing.Properties.FEED_TYPE,
-                Fishing.Properties.KEEP_HOURS,
-                Fishing.Properties.NO_KEEP_HOURS,
-                Fishing.Properties.KEEP_FISH,
-                Fishing.Properties.TAKE_FISH,
-                Fishing.Properties.TOTAL_FISH,
-                Fishing.Properties.TOTAL_MONEY,
-                Fishing.Properties.NOTE,
+                Fishings.Properties.CUSTOMER_ID,
+                Fishings.Properties.DATE_IN,
+                Fishings.Properties.DATE_OUT,
+                Fishings.Properties.NOTE,
         };
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder =
-                Fishing.Properties._ID + " ASC";
+                Fishings.Properties._ID + " ASC";
 
         Cursor cursor = db.query(
-                Fishing.Properties.TABLE_NAME,              // The table to query
+                Fishings.Properties.TABLE_NAME,              // The table to query
                 projection,                               // The columns to return
                 null,                                // The columns for the WHERE clause
                 null,                            // The values for the WHERE clause
@@ -77,41 +63,32 @@ public class FishingManager {
                 null,                                     // don't filter by row groups
                 sortOrder                                 // The sort order
         );
-
-        cursor.close();
         return cursor;
     }
 
     public Cursor getFishingEntry(String mCustomerId) {
-        FishingDbHelper mDbHelper = new FishingDbHelper(context);
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                Fishing.Properties.CUSTOMER_ID,
-                Fishing.Properties.DATE_IN,
-                Fishing.Properties.DATE_OUT,
-                Fishing.Properties.FEED_TYPE,
-                Fishing.Properties.KEEP_HOURS,
-                Fishing.Properties.NO_KEEP_HOURS,
-                Fishing.Properties.KEEP_FISH,
-                Fishing.Properties.TAKE_FISH,
-                Fishing.Properties.TOTAL_FISH,
-                Fishing.Properties.TOTAL_MONEY,
-                Fishing.Properties.NOTE,
+                Fishings.Properties.CUSTOMER_ID,
+                Fishings.Properties.DATE_IN,
+                Fishings.Properties.DATE_OUT,
+                Fishings.Properties.NOTE,
         };
 
         // Filter results WHERE "title" = 'My Title'
-        String selection = Fishing.Properties.CUSTOMER_ID + " = ?";
+        String selection = Fishings.Properties.CUSTOMER_ID + " = ?";
         String[] selectionArgs = { mCustomerId };
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder =
-                Fishing.Properties._ID + " ASC";
+                Fishings.Properties._ID + " ASC";
 
         Cursor cursor = db.query(
-                Fishing.Properties.TABLE_NAME,              // The table to query
+                Fishings.Properties.TABLE_NAME,              // The table to query
                 projection,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
                 selectionArgs,                            // The values for the WHERE clause
@@ -119,8 +96,20 @@ public class FishingManager {
                 null,                                     // don't filter by row groups
                 sortOrder                                 // The sort order
         );
-
-        cursor.close();
         return cursor;
+    }
+
+    public Cursor getFishingEntries() {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getReadableDatabase();
+
+        String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.FEED_TYPE + ", fishing." + Fishings.Properties.NOTE
+                                + ", customer." + Customers.Properties._ID + ", customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE
+                                + ", keepfishing." + KeepFishing.Properties.KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.NO_KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.KEEP_FISH
+                                + ", keepfishing." + KeepFishing.Properties.TAKE_FISH + ", keepfishing." + KeepFishing.Properties.TOTAL_FISH +
+                        " FROM " +  Fishings.Properties.TABLE_NAME + " fishing, " + Customers.Properties.TABLE_NAME + " customer, " + KeepFishing.Properties.TABLE_NAME + " keepfishing" +
+                        " WHERE " + "customer." + Customers.Properties._ID + " = " + "fishing." + Fishings.Properties._ID + " AND " + "customer." + Customers.Properties._ID + " = " + "keepfishing." + KeepFishing.Properties._ID;
+
+        return db.rawQuery(query, null);
     }
 }
