@@ -24,7 +24,7 @@ import java.util.Calendar;
 /**
  * A login screen that offers login via email/password.
  */
-public class AddNewCustomerActivity extends AppCompatActivity {
+public class UpdateCustomerActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -35,18 +35,20 @@ public class AddNewCustomerActivity extends AppCompatActivity {
     private AutoCompleteTextView mFullNameView;
     private EditText mMobileView;
     private EditText mDatInView;
+    private EditText mDateOutView;
     private View mProgressView;
     private View mSubmitFormView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_new_customer);
+        setContentView(R.layout.activity_update_customer);
 
         // Set up the login form.
         mMobileView = (EditText) findViewById(R.id.mobile);
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
         mDatInView = (EditText) findViewById(R.id.date_in);
+        mDateOutView = (EditText) findViewById(R.id.date_out);
         mSubmitFormView = findViewById(R.id.add_new_customer_form);
         mProgressView = findViewById(R.id.add_new_customer_progress);
 
@@ -69,6 +71,21 @@ public class AddNewCustomerActivity extends AppCompatActivity {
                 }
             }
         });
+
+        /*
+        //Focus date out
+        mDateOutView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus) {
+                    EditText editText = (EditText) mDateOutView;
+                    GetTimePicker(editText);
+                    //mDatInView.requestFocus();
+                }
+            }
+        });
+        */
+        mDateOutView.setEnabled(false);
     }
 
     public void GetTimePicker(final Object objText)

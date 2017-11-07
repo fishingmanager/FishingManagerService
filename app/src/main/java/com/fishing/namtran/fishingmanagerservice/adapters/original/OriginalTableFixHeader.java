@@ -18,6 +18,7 @@ import com.fishing.namtran.fishingmanagerservice.adapters.TableFixHeaderAdapter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -107,25 +108,33 @@ public class OriginalTableFixHeader {
 
         Cursor fishings = (new FishingManager(context)).getFishingEntries();
         Cursor settings = (new SettingsManager(context)).getSettingEntry("1");
-        String feedType = null;
         String totalHours = null;
+        String totalMoney = null;
+        String priceFishing = null;
+        String packagePrice = null;
 
         while (settings.moveToNext()) {
-            feedType = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE));
+            priceFishing = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING));
+            packagePrice = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING));
         }
         settings.close();
 
         while (fishings.moveToNext()) {
             String dateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
             String dateOut = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
+            String feedType = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.FEED_TYPE));
 
             try {
-                long time = (dateFormat.parse(dateOut).getTime() - dateFormat.parse(dateIn).getTime());
-                Date restDate = new Date(time);
-                totalHours = dateFormat.format(restDate);
+                long diff = (dateFormat.parse(dateOut).getTime() - dateFormat.parse(dateIn).getTime());
+                long diffSeconds = diff / 1000 % 60;
+                long diffMinutes = diff / (60 * 1000) % 60;
+                long diffHours = diff / (60 * 60 * 1000);
+                totalHours = diffHours + ":" + diffMinutes;
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+            totalMoney = (Integer.parseInt(feedType) + Integer.parseInt(priceFishing)) + "";
 
             items.add(new Nexus(
                     fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties._ID)),
@@ -140,7 +149,7 @@ public class OriginalTableFixHeader {
                     fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TAKE_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH)),
-                    "300.000",
+                    totalMoney,
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
         }
         fishings.close();
