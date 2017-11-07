@@ -1,7 +1,0 @@
-#Mon Oct 30 21:46:04 ICT 2017
-base.0=D\:\\projects\\FishingManagerService\\FishingManagerService\\samples\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run-bootstrap_f0a7854b95f3ebed29001c56075f13245a8694da
-renamed.1=classes2.dex
-renamed.0=classes.dex
-file.1=D\:\\projects\\FishingManagerService\\FishingManagerService\\samples\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run_3cdd722b355c03c0af39ce6a9ec2da7a40f8436e\\classes.dex
-base.1=D\:\\projects\\FishingManagerService\\FishingManagerService\\samples\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run_3cdd722b355c03c0af39ce6a9ec2da7a40f8436e
-file.0=D\:\\projects\\FishingManagerService\\FishingManagerService\\samples\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\10000\\instant-run-bootstrap_f0a7854b95f3ebed29001c56075f13245a8694da\\classes.dex
