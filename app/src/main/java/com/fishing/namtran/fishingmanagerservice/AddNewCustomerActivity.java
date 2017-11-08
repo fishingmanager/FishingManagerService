@@ -29,6 +29,8 @@ import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.CustomerManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
 
 import java.util.Calendar;
 
@@ -178,7 +180,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         String mobile = mMobileView.getText().toString();
         String dateIn = mDatInView.getText().toString();
         String note = mNoteView.getText().toString();
-        boolean feedType = mFeedTypeView.isEnabled();
+        boolean feedType = mFeedTypeView.isChecked();
 
         boolean cancel = false;
         View focusView = null;
@@ -297,7 +299,10 @@ public class AddNewCustomerActivity extends AppCompatActivity {
                 long custId = customer.createCustomer(mFullName, mMobile);
 
                 FishingManager fishing = new FishingManager(getApplicationContext());
-                long fishingId = fishing.createFishingEntry(custId, mDateIn, mFeedType == true ? 1 : 0, mNote);
+                long fishingId = fishing.createFishingEntry(custId, mDateIn, mFeedType ? 1 : 0, mNote);
+
+                KeepFishingManager keepFishing = new KeepFishingManager(getApplicationContext());
+                keepFishing.createKeepFishingEntry(custId, 0, 0, 0, 0, 0, "");
 
                 if(fishingId < 0)
                 {
