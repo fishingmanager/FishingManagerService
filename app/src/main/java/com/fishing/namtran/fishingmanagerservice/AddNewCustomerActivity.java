@@ -9,16 +9,27 @@ import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import com.fishing.namtran.fishingmanagerservice.dbconnection.CustomerManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
+
 import java.util.Calendar;
 
 /**
@@ -35,8 +46,11 @@ public class AddNewCustomerActivity extends AppCompatActivity {
     private AutoCompleteTextView mFullNameView;
     private EditText mMobileView;
     private EditText mDatInView;
+    private EditText mNoteView;
+    private CheckBox mFeedTypeView;
     private View mProgressView;
     private View mSubmitFormView;
+    private ArrayAdapter<String> listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +61,8 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         mMobileView = (EditText) findViewById(R.id.mobile);
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
         mDatInView = (EditText) findViewById(R.id.date_in);
+        mNoteView = (EditText) findViewById(R.id.note);
+        mFeedTypeView = (CheckBox) findViewById(R.id.feed_type);
         mSubmitFormView = findViewById(R.id.add_new_customer_form);
         mProgressView = findViewById(R.id.add_new_customer_progress);
 
@@ -67,6 +83,53 @@ public class AddNewCustomerActivity extends AppCompatActivity {
                     GetTimePicker(editText);
                     //mDateOutView.requestFocus();
                 }
+            }
+        });
+
+        //Search text
+        final ListView itemList = (ListView)findViewById(R.id.listView);
+
+        final String [] listViewAdapterContent = {"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
+
+        listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, listViewAdapterContent);
+        itemList.setAdapter(listAdapter);
+        itemList.setVisibility(View.GONE);
+
+        itemList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // make Toast when click
+                Toast.makeText(getApplicationContext(), "Position " + position, Toast.LENGTH_LONG).show();
+                mFullNameView.setText(AddNewCustomerActivity.this.listAdapter.getItem(position));
+                itemList.setVisibility(View.GONE);
+            }
+        });
+
+        mFullNameView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(mFullNameView.getText().toString().equals("") || AddNewCustomerActivity.this.listAdapter.isEmpty())
+                {
+                    itemList.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+
+        mFullNameView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                itemList.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                AddNewCustomerActivity.this.listAdapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -107,11 +170,15 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         mFullNameView.setError(null);
         mMobileView.setError(null);
         mDatInView.setError(null);
+        mFeedTypeView.setError(null);
+        mFeedTypeView.setError(null);
 
         // Store values at the time of the login attempt.
         String fullname = mFullNameView.getText().toString();
         String mobile = mMobileView.getText().toString();
         String dateIn = mDatInView.getText().toString();
+        String note = mNoteView.getText().toString();
+        boolean feedType = mFeedTypeView.isEnabled();
 
         boolean cancel = false;
         View focusView = null;
@@ -143,7 +210,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask();
+            mCustomerTask = new CustomerActionTask(fullname, mobile, dateIn, feedType, note);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -194,7 +261,19 @@ public class AddNewCustomerActivity extends AppCompatActivity {
      */
     public class CustomerActionTask extends AsyncTask<Void, Void, Boolean> {
 
-        CustomerActionTask() {}
+        private final String mFullName;
+        private final String mMobile;
+        private final String mDateIn;
+        private final String mNote;
+        private final boolean mFeedType;
+
+        CustomerActionTask(String fullname, String mobile, String dateIn, boolean feedType, String note) {
+            mFullName = fullname;
+            mMobile = mobile;
+            mDateIn = dateIn;
+            mNote = note;
+            mFeedType = feedType;
+        }
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -214,9 +293,18 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
             if (success) {
                 finish();
+                CustomerManager customer = new CustomerManager(getApplicationContext());
+                long custId = customer.createCustomer(mFullName, mMobile);
+
+                FishingManager fishing = new FishingManager(getApplicationContext());
+                long fishingId = fishing.createFishingEntry(custId, mDateIn, mFeedType == true ? 1 : 0, mNote);
+
+                if(fishingId < 0)
+                {
+                    Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));
+                }
             } else {
-                mMobileView.setError(getString(R.string.error_incorrect_password));
-                mMobileView.requestFocus();
+                Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));
             }
         }
 

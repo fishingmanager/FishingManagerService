@@ -18,7 +18,7 @@ public class FishingManager {
         this.context = context;
     }
 
-    public void createFishingEntry(String mCustomerId, String mDateIn, String mDateOut, String mFeedType, String mKeepHours, String mNoKeepHours, String mKeepFish, String mTakeFish, String mTotalFish, String mTotalMoney, String mNote) {
+    public long createFishingEntry(long mCustomerId, String mDateIn, int mFeedType, String mNote) { // String mKeepHours, String mNoKeepHours, String mKeepFish, String mTakeFish, String mTotalFish, String mTotalMoney, String mNote
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
@@ -27,14 +27,16 @@ public class FishingManager {
         ContentValues values = new ContentValues();
         values.put(Fishings.Properties.CUSTOMER_ID, mCustomerId);
         values.put(Fishings.Properties.DATE_IN, mDateIn);
-        values.put(Fishings.Properties.DATE_OUT, mDateOut);
+        values.put(Fishings.Properties.FEED_TYPE, mFeedType);
         values.put(Fishings.Properties.NOTE, mNote);
 
         // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(Fishings.Properties.TABLE_NAME, null, values);
+        long rowId = db.insert(Fishings.Properties.TABLE_NAME, null, values);
 
         //close connection
         db.close();
+
+        return rowId;
     }
 
     public Cursor getFishingAllEntries() {

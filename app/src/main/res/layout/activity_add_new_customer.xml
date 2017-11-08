@@ -41,10 +41,19 @@
                     android:hint="@string/fullname"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:actionViewClass="android.widget.SearchView"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_200dp"
+                android:id="@+id/listView"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/fullname"
+                android:layout_alignLeft="@+id/fullname"
+                android:layout_alignStart="@+id/fullname" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -91,17 +100,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <EditText
+                <CheckBox
                     android:id="@+id/feed_type"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:hint="@string/feed_type"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_submit_short"
-                    android:imeOptions="actionUnspecified"
-                    android:maxLines="1"
-                    android:inputType="number"
-                    android:singleLine="true" />
+                    android:text="@string/feed_type" />
 
             </android.support.design.widget.TextInputLayout>
 

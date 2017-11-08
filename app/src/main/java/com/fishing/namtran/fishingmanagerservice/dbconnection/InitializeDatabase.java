@@ -30,7 +30,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Fishings.Properties.CUSTOMER_ID + " INTEGER," +
                     Fishings.Properties.DATE_IN + " DATETIME," +
                     Fishings.Properties.DATE_OUT + " DATETIME," +
-                    Fishings.Properties.FEED_TYPE + " INTEGER," +
+                    Fishings.Properties.FEED_TYPE + " INTEGER DEFAULT 0," +
                     Fishings.Properties.NOTE + " TEXT); ";
 
     private static final String SQL_CREATE_KEEP_FISHINGS_TABLE =
