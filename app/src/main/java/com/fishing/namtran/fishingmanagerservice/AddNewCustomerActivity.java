@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.TimePickerDialog;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 
@@ -28,6 +29,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.CustomerManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
@@ -90,8 +92,17 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
         //Search text
         final ListView itemList = (ListView)findViewById(R.id.listView);
+        final String [] listViewAdapterContent = null; //{"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
 
-        final String [] listViewAdapterContent = {"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
+        //Get customers from database
+        CustomerManager customerManager = new CustomerManager(getApplicationContext());
+        Cursor searchCustomers = customerManager.getSearchCustomers();
+
+        int i = 0;
+        while (searchCustomers.moveToNext())
+        {
+            listViewAdapterContent[i] = searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.FULLNAME)) + " (" + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE)) + ")";
+        }
 
         listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, listViewAdapterContent);
         itemList.setAdapter(listAdapter);
