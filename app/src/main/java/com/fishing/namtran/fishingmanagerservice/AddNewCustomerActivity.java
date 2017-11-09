@@ -302,11 +302,14 @@ public class AddNewCustomerActivity extends AppCompatActivity {
                 long fishingId = fishing.createFishingEntry(custId, mDateIn, mFeedType ? 1 : 0, mNote);
 
                 KeepFishingManager keepFishing = new KeepFishingManager(getApplicationContext());
-                keepFishing.createKeepFishingEntry(custId, 0, 0, 0, 0, 0, "");
+                long keepFishingId = keepFishing.createKeepFishingEntry(custId, 0, 0, 0, 0, 0, "");
 
-                if(fishingId < 0)
+                if(keepFishingId < 0)
                 {
                     Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));
+                }
+                else {
+                    Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
             } else {
                 Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));

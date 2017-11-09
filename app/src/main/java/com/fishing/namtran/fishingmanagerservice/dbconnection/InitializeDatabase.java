@@ -27,6 +27,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     private static final String SQL_CREATE_FISHINGS_TABLE =
             "CREATE TABLE IF NOT EXISTS " + Fishings.Properties.TABLE_NAME + " (" +
                     Fishings.Properties._ID + " INTEGER PRIMARY KEY," +
+                    Fishings.Properties.USER_ID + " INTEGER DEFAULT 1," +
                     Fishings.Properties.CUSTOMER_ID + " INTEGER," +
                     Fishings.Properties.DATE_IN + " DATETIME," +
                     Fishings.Properties.DATE_OUT + " DATETIME," +
@@ -75,11 +76,12 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     private static final String SQL_CREATE_FISHINGS_RECORDS =
             "INSERT INTO " + Fishings.Properties.TABLE_NAME + " (" +
                     Fishings.Properties._ID + "," +
+                    Fishings.Properties.USER_ID + "," +
                     Fishings.Properties.CUSTOMER_ID + "," +
                     Fishings.Properties.DATE_IN + "," +
                     Fishings.Properties.DATE_OUT + "," +
                     Fishings.Properties.FEED_TYPE + "," +
-                    Fishings.Properties.NOTE + ") VALUES ( 1, 1, '2017/11/06 08:00:59', '2017/11/06 10:00:59', '15001', 'Khong co' ); ";
+                    Fishings.Properties.NOTE + ") VALUES ( 1, 1, 1, '2017/11/06 08:00:59', '2017/11/06 10:00:59', '1', 'Khong co' ); ";
 
     private static final String SQL_CREATE_KEEP_FISHINGS_RECORDS =
             "INSERT INTO " + KeepFishing.Properties.TABLE_NAME + " (" +
@@ -90,7 +92,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     KeepFishing.Properties.KEEP_FISH + "," +
                     KeepFishing.Properties.TAKE_FISH + "," +
                     KeepFishing.Properties.TOTAL_FISH + "," +
-                    KeepFishing.Properties.NOTE + ") VALUES ( 1, 1, 0, 0, 0, 0, 0, 'Moi bat dau cau' ); ";
+                    KeepFishing.Properties.NOTE + ") VALUES ( 1, 1, 0, 0, 0, 0, 0, '' ); ";
 
     /*---------------- Insert sample records -----------------------*/
 

@@ -25,23 +25,25 @@ public class CustomerManager {
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
-        long newRowId = checkCustomerExisted(mMobile);
+        long customerId = checkCustomerExisted(mMobile);
 
-        if( newRowId < 0) {
+        if( customerId < 0) {
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
             values.put(Customers.Properties.FULLNAME, mFullName);
             values.put(Customers.Properties.MOBILE, mMobile);
 
             // Insert the new row, returning the primary key value of the new row
-            newRowId = db.insert(Customers.Properties.TABLE_NAME, null, values);
+            customerId = db.insert(Customers.Properties.TABLE_NAME, null, values);
+        } else { //Update new infos for customer
+            updateCustomer(mFullName, mMobile);
         }
 
         //close connection
         db.close();
         mDbHelper.close();
 
-        return newRowId;
+        return customerId;
     }
 
     public long checkCustomerExisted(String mobile)
@@ -72,7 +74,7 @@ public class CustomerManager {
         );
 
         if(cursor.moveToNext()) {
-            if(mobile == cursor.getString(cursor.getColumnIndexOrThrow(Customers.Properties.MOBILE))) {
+            if(mobile.equals(cursor.getString(cursor.getColumnIndexOrThrow(Customers.Properties.MOBILE)))) {
                 long custId = cursor.getLong(cursor.getColumnIndexOrThrow(Customers.Properties._ID));
                 cursor.close();
                 return custId;
@@ -103,6 +105,18 @@ public class CustomerManager {
         //close connection
         db.close();
         mDbHelper.close();
+    }
+
+    public Cursor getCustomerEntries() {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getReadableDatabase();
+
+        String query = "SELECT fishing." + Fishings.Properties.DATE_OUT + ","
+                + ", customer." + Customers.Properties._ID + ", customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE +
+                " FROM " +  Fishings.Properties.TABLE_NAME + " fishing LEFT JOIN " + Customers.Properties.TABLE_NAME + " customer, " +
+                " WHERE " + "fishing." + Fishings.Properties.DATE_OUT + " != NULL";
+
+        return db.rawQuery(query, null);
     }
 
 }

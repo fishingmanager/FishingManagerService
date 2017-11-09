@@ -5,6 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Nam Tran on 10/30/2017.
  */
@@ -22,11 +26,13 @@ public class FishingManager {
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
+        Date currentDate = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(Fishings.Properties.CUSTOMER_ID, mCustomerId);
-        values.put(Fishings.Properties.DATE_IN, mDateIn);
+        values.put(Fishings.Properties.DATE_IN, dateFormat.format(currentDate) + " " + mDateIn + ":00");
         values.put(Fishings.Properties.FEED_TYPE, mFeedType);
         values.put(Fishings.Properties.NOTE, mNote);
 

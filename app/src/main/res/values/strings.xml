@@ -32,6 +32,8 @@
     <string name="price">Gia Ca</string>
     <string name="action_submit_short">OK</string>
     <string name="error_invalid_mobile">Mobile qua ngan, it nhat la 4 so</string>
+    <string name="yes">Co</string>
+    <string name="no">Khong</string>
 
     <string name="customer_manager">Quan ly khach hang</string>
     <string name="report">Bao cao</string>

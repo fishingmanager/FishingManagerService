@@ -29,9 +29,7 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         setContentView(R.layout.activity_manager_customer);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
-        tableFixHeaders = (TableFixHeaders) findViewById(R.id.tablefixheaders);
-        tableFixHeadersAdapterFactory = new TableFixHeadersAdapterFactory(this);
-        createTable(TableFixHeadersAdapterFactory.ORIGINAL);
+        loadFishingEntriesData();
     }
 
     @Override
@@ -73,6 +71,8 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         } else if (id == R.id.settings) {
             Utils.Redirect(getApplicationContext(), SettingsActivity.class);
             return true;
+        }  else if (id == R.id.customer_manager) {
+            Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
         }
 
         return super.onOptionsItemSelected(item);
@@ -82,5 +82,18 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         tableFixHeaders.setAdapter(tableFixHeadersAdapterFactory.getAdapter(type));
     }
 
+    private void loadFishingEntriesData()
+    {
+        tableFixHeaders = (TableFixHeaders) findViewById(R.id.tablefixheaders);
+        tableFixHeadersAdapterFactory = new TableFixHeadersAdapterFactory(this);
+        createTable(TableFixHeadersAdapterFactory.ORIGINAL);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        loadFishingEntriesData();
+    }
 
 }
