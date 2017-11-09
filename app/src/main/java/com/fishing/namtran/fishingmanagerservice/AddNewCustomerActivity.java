@@ -92,16 +92,18 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
         //Search text
         final ListView itemList = (ListView)findViewById(R.id.listView);
-        final String [] listViewAdapterContent = null; //{"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
+        String [] listViewAdapterContent; //{"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
 
         //Get customers from database
         CustomerManager customerManager = new CustomerManager(getApplicationContext());
         Cursor searchCustomers = customerManager.getSearchCustomers();
 
         int i = 0;
+        listViewAdapterContent = new String[searchCustomers.getCount()];
         while (searchCustomers.moveToNext())
         {
             listViewAdapterContent[i] = searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.FULLNAME)) + " (" + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE)) + ")";
+            i++;
         }
 
         listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, listViewAdapterContent);
@@ -113,7 +115,10 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // make Toast when click
                 Toast.makeText(getApplicationContext(), "Position " + position, Toast.LENGTH_LONG).show();
-                mFullNameView.setText(AddNewCustomerActivity.this.listAdapter.getItem(position));
+                String item = AddNewCustomerActivity.this.listAdapter.getItem(position);
+                String[] fullname = item.split(" \\(");
+                mFullNameView.setText(fullname[0]);
+                mMobileView.setText(fullname[1].split("\\)")[0]);
                 itemList.setVisibility(View.GONE);
             }
         });
@@ -121,8 +126,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         mFullNameView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if(mFullNameView.getText().toString().equals("") || AddNewCustomerActivity.this.listAdapter.isEmpty())
-                {
+                if (mFullNameView.getText().toString().equals("") || AddNewCustomerActivity.this.listAdapter.isEmpty()) {
                     itemList.setVisibility(View.GONE);
                 }
                 return false;
