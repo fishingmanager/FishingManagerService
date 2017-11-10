@@ -6,6 +6,8 @@ import android.support.design.widget.Snackbar;
 
 import com.fishing.namtran.fishingmanagerservice.ManagerCustomerActivity;
 import com.fishing.namtran.fishingmanagerservice.R;
+import com.fishing.namtran.fishingmanagerservice.UpdateCustomerActivity;
+import com.fishing.namtran.fishingmanagerservice.Utils;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
@@ -60,7 +62,8 @@ public class OriginalTableFixHeader {
         TableFixHeaderAdapter.ClickListener<Nexus, OriginalCellViewGroup> clickListenerBody = new TableFixHeaderAdapter.ClickListener<Nexus, OriginalCellViewGroup>() {
             @Override
             public void onClickItem(Nexus item, OriginalCellViewGroup viewGroup, int row, int column) {
-                Snackbar.make(viewGroup, "Click on " + item.data[column + 1] + " (" + row + "," + column + ")", Snackbar.LENGTH_SHORT).show();
+                //Snackbar.make(viewGroup, "Click on " + item.data[column + 1] + " (" + row + "," + column + ")", Snackbar.LENGTH_SHORT).show();
+                Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
             }
         };
 
@@ -102,11 +105,13 @@ public class OriginalTableFixHeader {
         List<Nexus> items = new ArrayList<>();
         DateFormat currentDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
         Date currentDate = new Date();
-        items.add(new Nexus("Ngay: " + currentDateFormat.format(currentDate)));
+        String dateFishing = currentDateFormat.format(currentDate);
+        items.add(new Nexus("Ngay: " + dateFishing));
 
-        Cursor fishings = (new FishingManager(context)).getFishingEntries();
+        Cursor fishings = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
         Cursor settings = (new SettingsManager(context)).getSettingEntry("1");
         String totalHours = null;
         String totalMoney = null;

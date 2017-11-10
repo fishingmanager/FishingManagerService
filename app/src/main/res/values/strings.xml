@@ -13,6 +13,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <string name="invalid_account">Tai khoan nay bi loi. Vui long nhap lai hoac thu voi tai khoan khac!</string>
     <string name="action_error">Luu du lieu khong thanh cong!</string>
+    <string name="fishing_status">Khach nay dang tham gia cau!</string>
 
     <string name="number_fishing">Ma So</string>
     <string name="fullname">Ten KH</string>
@@ -34,6 +35,8 @@
     <string name="error_invalid_mobile">Mobile qua ngan, it nhat la 4 so</string>
     <string name="yes">Co</string>
     <string name="no">Khong</string>
+    <string name="update_status">Cap Nhat Khach Hang</string>
+    <string name="fee_do_fish">Phi Lam Ca</string>
 
     <string name="customer_manager">Quan ly khach hang</string>
     <string name="report">Bao cao</string>

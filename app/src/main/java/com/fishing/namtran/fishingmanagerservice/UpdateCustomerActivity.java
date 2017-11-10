@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.TimePickerDialog;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 
@@ -19,7 +20,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+
+import static java.lang.Math.round;
 
 /**
  * A login screen that offers login via email/password.
@@ -36,23 +51,82 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private EditText mMobileView;
     private EditText mDatInView;
     private EditText mDateOutView;
+    private EditText mFeedTypeView;
+    private EditText mKeepFishView;
+    private EditText mTakeFishView;
+    private EditText mTotalFishView;
+    private EditText mFeeDoFishView;
+    private EditText mTotalMoneyView;
     private View mProgressView;
     private View mSubmitFormView;
+    private String mFishingId;
+    private int mTotalMoney;
+    private String mDateIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_customer);
 
+        mFishingId = getIntent().getStringExtra("fishingId");
+
         // Set up the login form.
         mMobileView = (EditText) findViewById(R.id.mobile);
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
         mDatInView = (EditText) findViewById(R.id.date_in);
         mDateOutView = (EditText) findViewById(R.id.date_out);
+        mFeedTypeView = (EditText) findViewById(R.id.feed_type);
+        mKeepFishView = (EditText) findViewById(R.id.keep_fish);
+        mTakeFishView = (EditText) findViewById(R.id.take_fish);
+        mTotalFishView = (EditText) findViewById(R.id.total_fish);
+        mFeeDoFishView = (EditText) findViewById(R.id.fee_do_fish);
+        mTotalMoneyView = (EditText) findViewById(R.id.total_money);
         mSubmitFormView = findViewById(R.id.add_new_customer_form);
         mProgressView = findViewById(R.id.add_new_customer_progress);
 
-        Button mAddNewCustomerButton = (Button) findViewById(R.id.add_new_customer_button);
+        String totalHours = null;
+        int priceFishing = 0;
+        int packagePrice = 0;
+        int priceFeedType = 0;
+        int feedTypeStatus = 0;
+        int feedType = 0;
+        double keepFish = 0.0;
+
+        Cursor fishings = (new FishingManager(getApplicationContext())).getFishingEntriesById(mFishingId);
+        Cursor settings = (new SettingsManager(getApplicationContext())).getSettingEntry("1");
+
+        if (settings.moveToNext()) {
+            priceFishing = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING));
+            packagePrice = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING));
+            priceFeedType = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE));
+        }
+        settings.close();
+
+        if(fishings.moveToNext())
+        {
+            mFullNameView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.FULLNAME)));
+            mMobileView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.MOBILE)));
+            mDateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
+            mDatInView.setText(mDateIn);
+            feedTypeStatus = fishings.getInt(fishings.getColumnIndexOrThrow(Fishings.Properties.FEED_TYPE));
+            mFeedTypeView.setText(feedTypeStatus == 1 ? getString(R.string.yes) : getString(R.string.no));
+            keepFish = fishings.getDouble(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_FISH));
+        }
+        fishings.close();
+
+        //
+        double takeFish = Double.parseDouble(mTakeFishView.getText().toString());
+        feedType = feedTypeStatus == 1 ? priceFeedType : 0;
+        int feeDoFish = Integer.parseInt(mFeeDoFishView.getText().toString());
+        mTotalMoney = priceFishing + feedType + feeDoFish;
+
+        mKeepFishView.setText(keepFish + "");
+        mTakeFishView.setText(takeFish + "");
+        mTotalFishView.setText((keepFish - takeFish) + "");
+        mTotalMoneyView.setText(mTotalMoney + "");
+
+        //Events action
+        Button mAddNewCustomerButton = (Button) findViewById(R.id.update_customer_button);
         mAddNewCustomerButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,32 +134,90 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             }
         });
 
-        //Focus date in
-        mDatInView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus) {
-                    EditText editText = (EditText) mDatInView;
-                    GetTimePicker(editText);
-                    //mDateOutView.requestFocus();
-                }
-            }
-        });
-
-        /*
         //Focus date out
         mDateOutView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if(hasFocus) {
-                    EditText editText = (EditText) mDateOutView;
-                    GetTimePicker(editText);
-                    //mDatInView.requestFocus();
+                    EditText dateOut = (EditText) mDateOutView;
+                    GetTimePicker(dateOut);
+                    //mDateOutView.requestFocus();
+                    /*
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    Date currentDate = new Date();
+                    String dateFishing = sqlDateFormat.format(currentDate);
+
+                    String fullDateOut = dateFishing + " " + dateOut.getText().toString() + ":00";
+
+                    try {
+                        if(dateOut != null) {
+                            long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
+                            long diffSeconds = diff / 1000 % 60;
+                            long diffMinutes = diff / (60 * 1000) % 60;
+                            long diffHours = diff / (60 * 60 * 1000);
+                            String totalHours = diffHours + ":" + diffMinutes;
+                        }
+                        mTotalMoneyView.setText(mTotalMoney + "");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }*/
                 }
             }
         });
-        */
-        mDateOutView.setEnabled(false);
+
+        mKeepFishView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                return calculate();
+            }
+        });
+
+        mTakeFishView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                return calculate();
+            }
+        });
+
+        mFeeDoFishView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                String mFeeDoFish = mFeeDoFishView.getText().toString();
+                int feeDoFish = 0;
+
+                if(!mFeeDoFish.equals(""))
+                {
+                    feeDoFish = Integer.parseInt(mFeeDoFishView.getText().toString());
+                }
+
+                mTotalMoneyView.setText(feeDoFish + mTotalMoney + "");
+                return false;
+            }
+        });
+    }
+
+    private boolean calculate()
+    {
+        String mKeepFish = mKeepFishView.getText().toString();
+        String mTakeFish = mTakeFishView.getText().toString();
+        double keepFish = 0.0;
+        double takeFish = 0.0;
+
+        if(mKeepFish.equals(""))
+        {
+            takeFish = Double.parseDouble(mTakeFish);
+        }
+        else if(mTakeFish.equals(""))
+        {
+            keepFish = Double.parseDouble(mKeepFish);
+        }
+        else {
+            keepFish = Double.parseDouble(mKeepFish);
+            takeFish = Double.parseDouble(mTakeFish);
+        }
+        mTotalFishView.setText((keepFish - takeFish) + "");
+        return false;
     }
 
     public void GetTimePicker(final Object objText)
@@ -121,34 +253,22 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         }
 
         // Reset errors.
-        mFullNameView.setError(null);
-        mMobileView.setError(null);
-        mDatInView.setError(null);
+        mDateOutView.setError(null);
 
         // Store values at the time of the login attempt.
-        String fullname = mFullNameView.getText().toString();
-        String mobile = mMobileView.getText().toString();
-        String dateIn = mDatInView.getText().toString();
+        String dateOut = mDateOutView.getText().toString();
+        String fishingId = mFishingId;
+        String totalFish = mTotalFishView.getText().toString();
+        String keepFish = mKeepFishView.getText().toString();
+        String takeFish = mTakeFishView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid mobile, if the user entered one.
-        if (!TextUtils.isEmpty(mobile) && !isMobileValid(mobile)) {
-            mMobileView.setError(getString(R.string.error_invalid_mobile));
-            focusView = mMobileView;
-            cancel = true;
-        }
-
-        if (TextUtils.isEmpty(fullname)) {
-            mFullNameView.setError(getString(R.string.error_field_required));
-            focusView = mFullNameView;
-            cancel = true;
-        }
-
-        if (TextUtils.isEmpty(dateIn)) {
-            mDatInView.setError(getString(R.string.error_field_required));
-            focusView = mDatInView;
+        if (TextUtils.isEmpty(dateOut)) {
+            mDateOutView.setError(getString(R.string.error_field_required));
+            focusView = mDateOutView;
             cancel = true;
         }
 
@@ -160,7 +280,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask();
+            mCustomerTask = new CustomerActionTask(fishingId, dateOut, totalFish);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -211,7 +331,15 @@ public class UpdateCustomerActivity extends AppCompatActivity {
      */
     public class CustomerActionTask extends AsyncTask<Void, Void, Boolean> {
 
-        CustomerActionTask() {}
+        private final String mFishingId;
+        private final String mDateOut;
+        private final String mTotalFish;
+
+        CustomerActionTask(String fishingId, String dateOut, String totalFish) {
+            mFishingId = fishingId;
+            mDateOut = dateOut;
+            mTotalFish = totalFish;
+        }
 
         @Override
         protected Boolean doInBackground(Void... params) {

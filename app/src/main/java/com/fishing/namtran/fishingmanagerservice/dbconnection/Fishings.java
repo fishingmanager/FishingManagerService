@@ -18,5 +18,6 @@ public final class Fishings {
         public static final String FEED_TYPE = "feed_type";
         public static final String NOTE = "note";
         public static final String USER_ID = "userId";
+        public static final String TOTAL_MONEY = "total_money";
     }
 }

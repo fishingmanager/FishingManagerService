@@ -31,7 +31,9 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".UpdateCustomerActivity"></activity>
+        <activity
+            android:name=".UpdateCustomerActivity"
+            android:label="@string/update_status"></activity>
     </application>
 
 </manifest>

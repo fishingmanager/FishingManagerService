@@ -35,19 +35,18 @@ public class Utils extends FragmentActivity {
 
     public static void Redirect(Context context, Class<?> cls) {
         Intent intent = new Intent(context, cls);
-        //EditText editText = (EditText) findViewById(R.id.email);
-        //String message = editText.getText().toString();
-        //intent.putExtra(EXTRA_MESSAGE, message);
         context.startActivity(intent);
     }
 
-    /*public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getSupportFragmentManager(), "timePicker");
-    }*/
+    public static void Redirect(Context context, Class<?> cls, String parameter, String value) {
+        Intent intent = new Intent(context, cls);
+        intent.putExtra(parameter, value);
+        context.startActivity(intent);
+    }
 
-    public static void GetTime(Context context, final EditText etext)
+    public static void GetTimePicker(Context context, final Object objText)
     {
+        //https://www.journaldev.com/9976/android-date-time-picker-dialog
         // Get Current Time
         final Calendar c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
@@ -60,9 +59,10 @@ public class Utils extends FragmentActivity {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
-                        etext.setText(hourOfDay + ":" + minute);
+                        EditText editText = (EditText) objText;
+                        editText.setText(String.format("%02d:%02d", hourOfDay, minute));
                     }
-                }, mHour, mMinute, false);
+                }, mHour, mMinute, true);
         timePickerDialog.show();
     }
 }

@@ -34,7 +34,10 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A login screen that offers login via email/password.
@@ -90,6 +93,18 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             }
         });
 
+        searchCustomers();
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        searchCustomers();
+    }
+
+    private void searchCustomers()
+    {
         //Search text
         final ListView itemList = (ListView)findViewById(R.id.listView);
         String [] listViewAdapterContent; //{"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
@@ -307,24 +322,26 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mCustomerTask = null;
             showProgress(false);
+            DateFormat currentDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            Date currentDate = new Date();
+            String fullDateIn = currentDateFormat.format(currentDate) + " " + mDateIn + ":00";
 
             if (success) {
-                finish();
                 CustomerManager customer = new CustomerManager(getApplicationContext());
                 long custId = customer.createCustomer(mFullName, mMobile);
 
                 FishingManager fishing = new FishingManager(getApplicationContext());
-                long fishingId = fishing.createFishingEntry(custId, mDateIn, mFeedType ? 1 : 0, mNote);
+                long fishingId = fishing.createFishingEntry(custId, fullDateIn, mFeedType ? 1 : 0, mNote);
 
                 KeepFishingManager keepFishing = new KeepFishingManager(getApplicationContext());
                 long keepFishingId = keepFishing.createKeepFishingEntry(custId, 0, 0, 0, 0, 0, "");
 
-                if(keepFishingId < 0)
+                if(fishingId == -1)
                 {
-                    Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));
+                    Utils.Alert(AddNewCustomerActivity.this, getString(R.string.fishing_status));
                 }
                 else {
-                    Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
+                    finish();
                 }
             } else {
                 Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));

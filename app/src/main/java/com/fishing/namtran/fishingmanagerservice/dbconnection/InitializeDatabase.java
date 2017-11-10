@@ -32,17 +32,18 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Fishings.Properties.DATE_IN + " DATETIME," +
                     Fishings.Properties.DATE_OUT + " DATETIME," +
                     Fishings.Properties.FEED_TYPE + " INTEGER DEFAULT 0," +
+                    Fishings.Properties.TOTAL_MONEY + " REAL DEFAULT 0.0," +
                     Fishings.Properties.NOTE + " TEXT); ";
 
     private static final String SQL_CREATE_KEEP_FISHINGS_TABLE =
             "CREATE TABLE IF NOT EXISTS " + KeepFishing.Properties.TABLE_NAME + " (" +
                     KeepFishing.Properties._ID + " INTEGER PRIMARY KEY," +
                     KeepFishing.Properties.CUSTOMER_ID + " INTEGER," +
-                    KeepFishing.Properties.KEEP_HOURS + " INTEGER," +
-                    KeepFishing.Properties.NO_KEEP_HOURS + " INTEGER," +
-                    KeepFishing.Properties.KEEP_FISH + " INTEGER," +
-                    KeepFishing.Properties.TAKE_FISH + " INTEGER," +
-                    KeepFishing.Properties.TOTAL_FISH + " INTEGER," +
+                    KeepFishing.Properties.KEEP_HOURS + " REAL," +
+                    KeepFishing.Properties.NO_KEEP_HOURS + " REAL," +
+                    KeepFishing.Properties.KEEP_FISH + " REAL," +
+                    KeepFishing.Properties.TAKE_FISH + " REAL," +
+                    KeepFishing.Properties.TOTAL_FISH + " REAL," +
                     KeepFishing.Properties.NOTE + " TEXT); ";
 
     private static final String SQL_CREATE_CUSTOMERS_TABLE =
@@ -81,7 +82,8 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Fishings.Properties.DATE_IN + "," +
                     Fishings.Properties.DATE_OUT + "," +
                     Fishings.Properties.FEED_TYPE + "," +
-                    Fishings.Properties.NOTE + ") VALUES ( 1, 1, 1, '2017/11/06 08:00:59', '2017/11/06 10:00:59', '1', 'Khong co' ); ";
+                    Fishings.Properties.TOTAL_MONEY + "," +
+                    Fishings.Properties.NOTE + ") VALUES ( 1, 1, 1, '2017/11/06 08:00:59', '2017/11/06 10:00:59', '1', 0.0, 'Khong co' ); ";
 
     private static final String SQL_CREATE_KEEP_FISHINGS_RECORDS =
             "INSERT INTO " + KeepFishing.Properties.TABLE_NAME + " (" +
@@ -92,7 +94,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     KeepFishing.Properties.KEEP_FISH + "," +
                     KeepFishing.Properties.TAKE_FISH + "," +
                     KeepFishing.Properties.TOTAL_FISH + "," +
-                    KeepFishing.Properties.NOTE + ") VALUES ( 1, 1, 0, 0, 0, 0, 0, '' ); ";
+                    KeepFishing.Properties.NOTE + ") VALUES ( 1, 1, 0, 0, 0.0, 0.0, 0.0, '' ); ";
 
     /*---------------- Insert sample records -----------------------*/
 

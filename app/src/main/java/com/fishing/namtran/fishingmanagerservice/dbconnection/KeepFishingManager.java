@@ -37,8 +37,6 @@ public class KeepFishingManager {
 
             // Insert the new row, returning the primary key value of the new row
             keepFishingId = db.insert(KeepFishing.Properties.TABLE_NAME, null, values);
-        } else {
-            updateKeepFishingEntry(mCustomerId, mKeepHours, mNoKeepHours, mKeepFish, mTakeFish, mTotalFish, mNote);
         }
 
         //close connection
@@ -56,6 +54,7 @@ public class KeepFishingManager {
         // you will actually use after this query.
         String[] projection = {
                 KeepFishing.Properties._ID,
+                KeepFishing.Properties.CUSTOMER_ID,
         };
 
         // Filter results WHERE "title" = 'My Title'
