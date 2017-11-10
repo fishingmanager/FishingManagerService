@@ -35,6 +35,13 @@ public class Utils extends FragmentActivity {
 
     public static void Redirect(Context context, Class<?> cls) {
         Intent intent = new Intent(context, cls);
+
+        // Closing all the Activities
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        // Add new Flag to start new Activity
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         context.startActivity(intent);
     }
 

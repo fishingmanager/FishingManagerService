@@ -10,7 +10,10 @@ import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -166,23 +169,53 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             }
         });
 
-        mKeepFishView.setOnKeyListener(new View.OnKeyListener() {
+        mKeepFishView.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                return calculate();
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                calculate();
             }
         });
 
-        mTakeFishView.setOnKeyListener(new View.OnKeyListener() {
+        mTakeFishView.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                return calculate();
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                calculate();
             }
         });
 
-        mFeeDoFishView.setOnKeyListener(new View.OnKeyListener() {
+        mFeeDoFishView.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
                 String mFeeDoFish = mFeeDoFishView.getText().toString();
                 int feeDoFish = 0;
 
@@ -192,7 +225,6 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 }
 
                 mTotalMoneyView.setText(feeDoFish + mTotalMoney + "");
-                return false;
             }
         });
     }

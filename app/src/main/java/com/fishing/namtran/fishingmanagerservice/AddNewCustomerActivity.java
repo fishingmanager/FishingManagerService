@@ -36,8 +36,11 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.logging.Filter;
 
 /**
  * A login screen that offers login via email/password.
@@ -122,6 +125,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         }
 
         listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, listViewAdapterContent);
+        itemList.setTextFilterEnabled(true);
         itemList.setAdapter(listAdapter);
         itemList.setVisibility(View.GONE);
 
@@ -138,16 +142,6 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             }
         });
 
-        mFullNameView.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (mFullNameView.getText().toString().equals("") || AddNewCustomerActivity.this.listAdapter.isEmpty()) {
-                    itemList.setVisibility(View.GONE);
-                }
-                return false;
-            }
-        });
-
         mFullNameView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -161,7 +155,9 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                if (mFullNameView.getText().toString().equals("") || AddNewCustomerActivity.this.listAdapter.isEmpty()) {
+                    itemList.setVisibility(View.GONE);
+                }
             }
         });
     }
