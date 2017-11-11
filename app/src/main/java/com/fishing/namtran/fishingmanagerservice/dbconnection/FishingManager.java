@@ -110,6 +110,70 @@ public class FishingManager {
         return cursor;
     }
 
+    public int setFeedTypeStatus(String fishingId) {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                Fishings.Properties.FEED_TYPE,
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = Fishings.Properties._ID + " = ?";
+        String[] selectionArgs = { fishingId };
+
+        Cursor cursor = db.query(
+                Fishings.Properties.TABLE_NAME,              // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        int status = 0;
+
+        if(cursor.moveToNext())
+        {
+            status = cursor.getInt(cursor.getColumnIndexOrThrow(Fishings.Properties.FEED_TYPE));
+        }
+        cursor.close();
+        db.close();
+        mDbHelper.close();
+        return updateFeedTypeStatus(fishingId, status);
+    }
+
+    public int updateFeedTypeStatus(String fishingId, int status) {
+
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getWritableDatabase();
+
+        status = status == 1 ? 0 : 1;
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(Fishings.Properties.FEED_TYPE, status);
+
+        // Which row to update, based on the title
+        String selection = Fishings.Properties._ID + " = ?";
+        String[] selectionArgs = { fishingId };
+
+        int count = db.update(
+                Fishings.Properties.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        //close connection
+        db.close();
+        mDbHelper.close();
+
+        return status;
+    }
+
     public boolean checkFishingEntryExisted(long mCustomerId, String dateIn) {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
@@ -153,7 +217,7 @@ public class FishingManager {
         db = mDbHelper.getReadableDatabase();
 
         String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.FEED_TYPE + ", fishing." + Fishings.Properties.NOTE
-                                + ", customer." + Customers.Properties._ID + ", customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE
+                                + ", fishing." + Fishings.Properties._ID + ", customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE
                                 + ", keepfishing." + KeepFishing.Properties.KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.NO_KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.KEEP_FISH
                                 + ", keepfishing." + KeepFishing.Properties.TAKE_FISH + ", keepfishing." + KeepFishing.Properties.TOTAL_FISH +
                         " FROM " +  Fishings.Properties.TABLE_NAME + " fishing, " + Customers.Properties.TABLE_NAME + " customer, " + KeepFishing.Properties.TABLE_NAME + " keepfishing" +

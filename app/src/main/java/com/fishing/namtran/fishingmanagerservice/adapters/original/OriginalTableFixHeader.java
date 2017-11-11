@@ -3,6 +3,7 @@ package com.fishing.namtran.fishingmanagerservice.adapters.original;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 
 import com.fishing.namtran.fishingmanagerservice.ManagerCustomerActivity;
 import com.fishing.namtran.fishingmanagerservice.R;
@@ -63,7 +64,16 @@ public class OriginalTableFixHeader {
             @Override
             public void onClickItem(Nexus item, OriginalCellViewGroup viewGroup, int row, int column) {
                 //Snackbar.make(viewGroup, "Click on " + item.data[column + 1] + " (" + row + "," + column + ")", Snackbar.LENGTH_SHORT).show();
-                Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
+                //viewGroup.vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorYellow));
+
+                if(column == 4)
+                {
+                    FishingManager fishings = new FishingManager(context);
+                    int status = fishings.setFeedTypeStatus(item.data[0]);
+                    viewGroup.textView.setText(status == 1? context.getString(R.string.yes) : context.getString(R.string.no));
+                } else {
+                    Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
+                }
             }
         };
 
@@ -80,6 +90,8 @@ public class OriginalTableFixHeader {
         adapter.setClickListenerBody(clickListenerBody);
         //adapter.setClickListenerSection(clickListenerSection);
     }
+
+
 
     private List<String> getHeader() {
         final String headers[] = {
@@ -149,7 +161,7 @@ public class OriginalTableFixHeader {
             totalMoney = ((feedType == 1 ? priceFeedType : 0) + Integer.parseInt(priceFishing)) + "";
 
             items.add(new Nexus(
-                    fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties._ID)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties._ID)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.FULLNAME)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.MOBILE)),
                     dateIn,

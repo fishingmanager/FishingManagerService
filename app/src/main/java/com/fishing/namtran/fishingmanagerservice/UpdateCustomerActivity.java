@@ -15,11 +15,14 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -54,7 +57,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private EditText mMobileView;
     private EditText mDatInView;
     private EditText mDateOutView;
-    private EditText mFeedTypeView;
+    private CheckBox mFeedTypeView;
     private EditText mKeepFishView;
     private EditText mTakeFishView;
     private EditText mTotalFishView;
@@ -78,7 +81,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
         mDatInView = (EditText) findViewById(R.id.date_in);
         mDateOutView = (EditText) findViewById(R.id.date_out);
-        mFeedTypeView = (EditText) findViewById(R.id.feed_type);
+        mFeedTypeView = (CheckBox) findViewById(R.id.feed_type);
         mKeepFishView = (EditText) findViewById(R.id.keep_fish);
         mTakeFishView = (EditText) findViewById(R.id.take_fish);
         mTotalFishView = (EditText) findViewById(R.id.total_fish);
@@ -112,7 +115,8 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             mDateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
             mDatInView.setText(mDateIn);
             feedTypeStatus = fishings.getInt(fishings.getColumnIndexOrThrow(Fishings.Properties.FEED_TYPE));
-            mFeedTypeView.setText(feedTypeStatus == 1 ? getString(R.string.yes) : getString(R.string.no));
+            //mFeedTypeView.setText(feedTypeStatus == 1 ? getString(R.string.yes) : getString(R.string.no));
+            mFeedTypeView.setChecked(feedTypeStatus == 1 ? true : false);
             keepFish = fishings.getDouble(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_FISH));
         }
         fishings.close();
@@ -137,6 +141,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             }
         });
 
+        /*
         //Focus date out
         mDateOutView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -145,7 +150,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                     EditText dateOut = (EditText) mDateOutView;
                     GetTimePicker(dateOut);
                     //mDateOutView.requestFocus();
-                    /*
+
                     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                     DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                     Date currentDate = new Date();
@@ -160,14 +165,49 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                             long diffMinutes = diff / (60 * 1000) % 60;
                             long diffHours = diff / (60 * 60 * 1000);
                             String totalHours = diffHours + ":" + diffMinutes;
+                            mTotalMoneyView.setText(totalHours + "");
                         }
-                        mTotalMoneyView.setText(mTotalMoney + "");
+
                     } catch (ParseException e) {
                         e.printStackTrace();
-                    }*/
+                    }
                 }
+}
+        });
+        */
+        mDateOutView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                EditText dateOut = (EditText) mDateOutView;
+                if(MotionEvent.ACTION_UP == event.getAction())
+                {
+                    GetTimePicker(dateOut);
+                }
+
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                Date currentDate = new Date();
+                String dateFishing = sqlDateFormat.format(currentDate);
+
+                String fullDateOut = dateFishing + " " + dateOut.getText().toString() + ":00";
+
+                try {
+                    if(dateOut != null) {
+                        long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
+                        long diffSeconds = diff / 1000 % 60;
+                        long diffMinutes = diff / (60 * 1000) % 60;
+                        long diffHours = diff / (60 * 60 * 1000);
+                        String totalHours = diffHours + ":" + diffMinutes;
+                        mTotalMoneyView.setText(totalHours + "");
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return false;
             }
         });
+
 
         mKeepFishView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -252,13 +292,16 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         return false;
     }
 
-    public void GetTimePicker(final Object objText)
+    public String GetTimePicker(final Object objText)
     {
         //https://www.journaldev.com/9976/android-date-time-picker-dialog
         // Get Current Time
         final Calendar c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
         int mMinute = c.get(Calendar.MINUTE);
+
+        final int pickHour = 0;
+        int pickMin = 0;
 
         // Launch Time Picker Dialog
         TimePickerDialog timePickerDialog = new TimePickerDialog(this,
@@ -269,9 +312,11 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                                           int minute) {
                         EditText editText = (EditText) objText;
                         editText.setText(String.format("%02d:%02d", hourOfDay, minute));
+                        //pickHour = hourOfDay;
                     }
                 }, mHour, mMinute, true);
         timePickerDialog.show();
+        //return String.format("%02d:%02d", pickHour, pickMin);
     }
 
     /**
