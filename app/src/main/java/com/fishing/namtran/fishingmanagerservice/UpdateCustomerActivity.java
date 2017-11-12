@@ -13,18 +13,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
@@ -61,6 +56,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private EditText mKeepFishView;
     private EditText mTakeFishView;
     private EditText mTotalFishView;
+    private EditText mTotalHoursView;
     private EditText mFeeDoFishView;
     private EditText mTotalMoneyView;
     private View mProgressView;
@@ -68,6 +64,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private String mFishingId;
     private int mTotalMoney;
     private String mDateIn;
+    private String mDateOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +78,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
         mDatInView = (EditText) findViewById(R.id.date_in);
         mDateOutView = (EditText) findViewById(R.id.date_out);
+        mTotalHoursView = (EditText) findViewById(R.id.total_hours);
         mFeedTypeView = (CheckBox) findViewById(R.id.feed_type);
         mKeepFishView = (EditText) findViewById(R.id.keep_fish);
         mTakeFishView = (EditText) findViewById(R.id.take_fish);
@@ -125,12 +123,11 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         double takeFish = Double.parseDouble(mTakeFishView.getText().toString());
         feedType = feedTypeStatus == 1 ? priceFeedType : 0;
         int feeDoFish = Integer.parseInt(mFeeDoFishView.getText().toString());
-        mTotalMoney = priceFishing + feedType + feeDoFish;
 
         mKeepFishView.setText(keepFish + "");
         mTakeFishView.setText(takeFish + "");
         mTotalFishView.setText((keepFish - takeFish) + "");
-        mTotalMoneyView.setText(mTotalMoney + "");
+        //mTotalMoneyView.setText(mTotalMoney + "");
 
         //Events action
         Button mAddNewCustomerButton = (Button) findViewById(R.id.update_customer_button);
@@ -141,73 +138,16 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        //Focus date out
-        mDateOutView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus) {
-                    EditText dateOut = (EditText) mDateOutView;
-                    GetTimePicker(dateOut);
-                    //mDateOutView.requestFocus();
-
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                    Date currentDate = new Date();
-                    String dateFishing = sqlDateFormat.format(currentDate);
-
-                    String fullDateOut = dateFishing + " " + dateOut.getText().toString() + ":00";
-
-                    try {
-                        if(dateOut != null) {
-                            long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
-                            long diffSeconds = diff / 1000 % 60;
-                            long diffMinutes = diff / (60 * 1000) % 60;
-                            long diffHours = diff / (60 * 60 * 1000);
-                            String totalHours = diffHours + ":" + diffMinutes;
-                            mTotalMoneyView.setText(totalHours + "");
-                        }
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-}
-        });
-        */
         mDateOutView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                EditText dateOut = (EditText) mDateOutView;
                 if(MotionEvent.ACTION_UP == event.getAction())
                 {
-                    GetTimePicker(dateOut);
-                }
-
-                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                Date currentDate = new Date();
-                String dateFishing = sqlDateFormat.format(currentDate);
-
-                String fullDateOut = dateFishing + " " + dateOut.getText().toString() + ":00";
-
-                try {
-                    if(dateOut != null) {
-                        long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
-                        long diffSeconds = diff / 1000 % 60;
-                        long diffMinutes = diff / (60 * 1000) % 60;
-                        long diffHours = diff / (60 * 60 * 1000);
-                        String totalHours = diffHours + ":" + diffMinutes;
-                        mTotalMoneyView.setText(totalHours + "");
-                    }
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    GetTimeDateOutAndCalculateFeeFishing();
                 }
                 return false;
             }
         });
-
 
         mKeepFishView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -263,8 +203,8 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 {
                     feeDoFish = Integer.parseInt(mFeeDoFishView.getText().toString());
                 }
-
-                mTotalMoneyView.setText(feeDoFish + mTotalMoney + "");
+                mTotalMoney = Integer.parseInt(mTotalMoneyView.getText().toString());
+                mTotalMoneyView.setText((feeDoFish + mTotalMoney) + "");
             }
         });
     }
@@ -292,16 +232,12 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         return false;
     }
 
-    public String GetTimePicker(final Object objText)
+    public void GetTimeDateOutAndCalculateFeeFishing()
     {
-        //https://www.journaldev.com/9976/android-date-time-picker-dialog
         // Get Current Time
         final Calendar c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
         int mMinute = c.get(Calendar.MINUTE);
-
-        final int pickHour = 0;
-        int pickMin = 0;
 
         // Launch Time Picker Dialog
         TimePickerDialog timePickerDialog = new TimePickerDialog(this,
@@ -310,13 +246,83 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,
                                           int minute) {
-                        EditText editText = (EditText) objText;
-                        editText.setText(String.format("%02d:%02d", hourOfDay, minute));
-                        //pickHour = hourOfDay;
+                        EditText totalHours = (EditText) mTotalHoursView;
+                        EditText dateOut = (EditText) mDateOutView;
+                        dateOut.setText(String.format("%02d:%02d", hourOfDay, minute));
+
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                        Date currentDate = new Date();
+                        String dateFishing = sqlDateFormat.format(currentDate);
+
+                        String fullDateOut = dateFishing + " " + String.format("%02d:%02d", hourOfDay, minute) + ":00";
+
+                        try {
+                            if(dateOut != null) {
+                                long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
+                                long diffSeconds = diff / 1000 % 60;
+                                long diffMinutes = diff / (60 * 1000) % 60;
+                                long diffHours = diff / (60 * 60 * 1000);
+                                totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
+
+                                long totalFee = 0;
+                                long point2Hours = 120000;
+                                long point3Hours = 170000;
+                                long point4Hours = 200000;
+                                long extra30Mins = 20000;
+
+                                if(diffHours < 3)
+                                {
+                                    if(diffHours < 2)
+                                    {
+                                        totalFee = point2Hours;
+                                    }
+                                    else
+                                    if(diffHours == 2)
+                                    {
+                                        totalFee = point2Hours;
+                                        if(diffMinutes >= 15)
+                                        {
+                                            totalFee = point3Hours;
+                                        }
+                                    }
+                                }
+                                else
+                                if(diffHours >= 3 && diffHours < 4) // >3h
+                                {
+                                    if(diffMinutes >= 15)
+                                    {
+                                        totalFee = point4Hours;
+                                    }
+                                    else
+                                    {
+                                        totalFee = point3Hours;
+                                    }
+                                }
+                                else // >4h
+                                {
+                                    long extraHours = diffHours - 4;
+                                    totalFee = point4Hours + (extraHours*2)*extra30Mins; //30 mins are 20k
+                                    if(diffMinutes >= 10) // > 10mins
+                                    {
+                                        if(diffMinutes <= 30) {
+                                            totalFee += extra30Mins;
+                                        }
+                                        else {
+                                            totalFee += 2*extra30Mins;
+                                        }
+                                    }
+                                }
+                                mTotalMoneyView.setText(totalFee + "");
+                            }
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }, mHour, mMinute, true);
         timePickerDialog.show();
-        //return String.format("%02d:%02d", pickHour, pickMin);
     }
 
     /**
