@@ -62,7 +62,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private View mProgressView;
     private View mSubmitFormView;
     private String mFishingId;
-    private int mTotalMoney;
+    private long mTotalMoney;
     private String mDateIn;
     private String mDateOut;
 
@@ -184,9 +184,14 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         });
 
         mFeeDoFishView.addTextChangedListener(new TextWatcher() {
+            boolean flag = false;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                if(!flag) {
+                    mTotalMoney = Long.parseLong(mTotalMoneyView.getText().toString());
+                    flag = true;
+                }
             }
 
             @Override
@@ -203,8 +208,10 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 {
                     feeDoFish = Integer.parseInt(mFeeDoFishView.getText().toString());
                 }
-                mTotalMoney = Integer.parseInt(mTotalMoneyView.getText().toString());
+
                 mTotalMoneyView.setText((feeDoFish + mTotalMoney) + "");
+                flag = true;
+                //mTotalMoney = feeDoFish + mTotalMoney;
             }
         });
     }
@@ -313,7 +320,9 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                                         }
                                     }
                                 }
-                                mTotalMoneyView.setText(totalFee + "");
+
+                                mTotalMoney = totalFee + Integer.parseInt(mFeeDoFishView.getText().toString());
+                                mTotalMoneyView.setText(mTotalMoney + "");
                             }
 
                         } catch (ParseException e) {
