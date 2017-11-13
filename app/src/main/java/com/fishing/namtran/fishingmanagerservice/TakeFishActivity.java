@@ -3,7 +3,6 @@ package com.fishing.namtran.fishingmanagerservice;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.TimePickerDialog;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
@@ -13,37 +12,23 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.CustomerManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
-import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
-import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
-import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
-import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
-import static java.lang.Math.round;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A login screen that offers login via email/password.
@@ -65,14 +50,12 @@ public class TakeFishActivity extends AppCompatActivity {
     private EditText mNoteView;
     private View mProgressView;
     private View mSubmitFormView;
-    private String mFishingId;
+    private Cursor SearchCustomerResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_fish);
-
-        mFishingId = getIntent().getStringExtra("fishingId");
 
         // Set up the login form.
         mMobileView = (EditText) findViewById(R.id.mobile);
@@ -85,24 +68,8 @@ public class TakeFishActivity extends AppCompatActivity {
         mSubmitFormView = findViewById(R.id.update_take_fish_form);
         mProgressView = findViewById(R.id.update_take_fish_progress);
 
-        double keepFish = 0.0;
-        Cursor fishings = (new FishingManager(getApplicationContext())).getFishingEntriesById(mFishingId);
-
-        if(fishings.moveToNext())
-        {
-            mFullNameView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.FULLNAME)));
-            mMobileView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.MOBILE)));
-
-            keepFish = fishings.getDouble(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
-            mNoteView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE)));
-        }
-        fishings.close();
-
-        //
-        double takeFish = Double.parseDouble(mTakeFishView.getText().toString());
-
-        mKeepFishView.setText(keepFish + "");
-        mTotalFishView.setText((keepFish - takeFish) + "");
+        CustomerManager customerManager = new CustomerManager(getApplicationContext());
+        SearchCustomerResults = customerManager.getSearchAllCustomers();
 
         //Events action
         Button mUpdateTakeFishButton = (Button) findViewById(R.id.update_take_fish_button);
@@ -147,31 +114,7 @@ public class TakeFishActivity extends AppCompatActivity {
             }
         });
 
-        mFeeDoFishView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String feeDoFishText = mFeeDoFishView.getText().toString();
-                int feeDoFish = 0;
-
-                if(!feeDoFishText.equals(""))
-                {
-                    feeDoFish = Integer.parseInt(mFeeDoFishView.getText().toString());
-                }
-                mFeeDoFishView.setText(feeDoFish + "");
-            }
-        });
-
-        searchCustomers();
+        searchCustomers(SearchCustomerResults);
     }
 
     private boolean calculate()
@@ -197,23 +140,22 @@ public class TakeFishActivity extends AppCompatActivity {
         return false;
     }
 
-    private void searchCustomers()
+    private void searchCustomers(Cursor searchCustomers)
     {
         final ArrayAdapter<String> listAdapter;
 
         //Search text
         final ListView itemList = (ListView)findViewById(R.id.listView);
         String [] listViewAdapterContent;
-
-        //Get customers from database
-        CustomerManager customerManager = new CustomerManager(getApplicationContext());
-        Cursor searchCustomers = customerManager.getSearchAllCustomers();
+        final Map<String, String> notes = new HashMap<String, String>();
 
         int i = 0;
         listViewAdapterContent = new String[searchCustomers.getCount()];
         while (searchCustomers.moveToNext())
         {
-            listViewAdapterContent[i] = searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.FULLNAME)) + " - " + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE));
+            listViewAdapterContent[i] = searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.FULLNAME)) + " - " + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE)) + " - "
+                                        + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
+            notes.put(searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE)), searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(KeepFishing.Properties.NOTE)));
             i++;
         }
 
@@ -231,6 +173,8 @@ public class TakeFishActivity extends AppCompatActivity {
                 String[] fullname = item.split("-");
                 mFullNameView.setText(fullname[0].trim());
                 mMobileView.setText(fullname[1].trim());
+                mKeepFishView.setText(fullname[2].trim());
+                mNoteView.setText(notes.get(fullname[1].trim()));
                 itemList.setVisibility(View.GONE);
             }
         });
@@ -386,7 +330,7 @@ public class TakeFishActivity extends AppCompatActivity {
 
                 KeepFishingManager keepFishingManager = new KeepFishingManager(getApplicationContext());
 
-                keepFishingManager.updateKeepFishingEntry(custId, "0", "0", mKeepFish, mTakeFish, mTotalFish, mNote + " - " + getString(R.string.fee_do_fish) + " : " + mFeeDoFish);
+                keepFishingManager.updateKeepFishingEntry(custId, "0", "0", mKeepFish, mTakeFish, mTotalFish, mNote);
                 Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
 
             } else {

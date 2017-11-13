@@ -66,11 +66,11 @@ public class OriginalTableFixHeader {
                 //Snackbar.make(viewGroup, "Click on " + item.data[column + 1] + " (" + row + "," + column + ")", Snackbar.LENGTH_SHORT).show();
                 //viewGroup.vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorYellow));
 
-                if(column == 4)
+                if(column == 5)
                 {
                     FishingManager fishings = new FishingManager(context);
                     int status = fishings.setFeedTypeStatus(item.data[0]);
-                    viewGroup.textView.setText(status == 1? context.getString(R.string.yes) : context.getString(R.string.no));
+                    viewGroup.textView.setText(status == 1 ? context.getString(R.string.yes) : context.getString(R.string.no));
                 } else {
                     Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
                 }
