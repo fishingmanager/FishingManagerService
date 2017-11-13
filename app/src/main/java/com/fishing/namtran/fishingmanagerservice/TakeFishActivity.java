@@ -13,39 +13,42 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.CustomerManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.logging.Filter;
+
+import static java.lang.Math.round;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class AddNewCustomerActivity extends AppCompatActivity {
+public class TakeFishActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -55,65 +58,156 @@ public class AddNewCustomerActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mFullNameView;
     private EditText mMobileView;
-    private EditText mDatInView;
+    private EditText mKeepFishView;
+    private EditText mTakeFishView;
+    private EditText mTotalFishView;
+    private EditText mFeeDoFishView;
     private EditText mNoteView;
-    private CheckBox mFeedTypeView;
     private View mProgressView;
     private View mSubmitFormView;
-    private ArrayAdapter<String> listAdapter;
+    private String mFishingId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_new_customer);
+        setContentView(R.layout.activity_take_fish);
+
+        mFishingId = getIntent().getStringExtra("fishingId");
 
         // Set up the login form.
         mMobileView = (EditText) findViewById(R.id.mobile);
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
-        mDatInView = (EditText) findViewById(R.id.date_in);
+        mKeepFishView = (EditText) findViewById(R.id.keep_fish);
+        mTakeFishView = (EditText) findViewById(R.id.take_fish);
+        mTotalFishView = (EditText) findViewById(R.id.total_fish);
+        mFeeDoFishView = (EditText) findViewById(R.id.fee_do_fish);
         mNoteView = (EditText) findViewById(R.id.note);
-        mFeedTypeView = (CheckBox) findViewById(R.id.feed_type);
-        mSubmitFormView = findViewById(R.id.add_new_customer_form);
-        mProgressView = findViewById(R.id.add_new_customer_progress);
+        mSubmitFormView = findViewById(R.id.update_take_fish_form);
+        mProgressView = findViewById(R.id.update_take_fish_progress);
 
-        Button mAddNewCustomerButton = (Button) findViewById(R.id.add_new_customer_button);
-        mAddNewCustomerButton.setOnClickListener(new OnClickListener() {
+        double keepFish = 0.0;
+        Cursor fishings = (new FishingManager(getApplicationContext())).getFishingEntriesById(mFishingId);
+
+        if(fishings.moveToNext())
+        {
+            mFullNameView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.FULLNAME)));
+            mMobileView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.MOBILE)));
+
+            keepFish = fishings.getDouble(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
+            mNoteView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE)));
+        }
+        fishings.close();
+
+        //
+        double takeFish = Double.parseDouble(mTakeFishView.getText().toString());
+
+        mKeepFishView.setText(keepFish + "");
+        mTotalFishView.setText((keepFish - takeFish) + "");
+
+        //Events action
+        Button mUpdateTakeFishButton = (Button) findViewById(R.id.update_take_fish_button);
+        mUpdateTakeFishButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptSubmit();
             }
         });
 
-        //Focus date in
-        mDatInView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mKeepFishView.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus) {
-                    EditText editText = (EditText) mDatInView;
-                    GetTimePicker(editText);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                calculate();
+            }
+        });
+
+        mTakeFishView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                calculate();
+            }
+        });
+
+        mFeeDoFishView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String feeDoFishText = mFeeDoFishView.getText().toString();
+                int feeDoFish = 0;
+
+                if(!feeDoFishText.equals(""))
+                {
+                    feeDoFish = Integer.parseInt(mFeeDoFishView.getText().toString());
                 }
+                mFeeDoFishView.setText(feeDoFish + "");
             }
         });
 
         searchCustomers();
     }
 
-    @Override
-    protected void onResume()
+    private boolean calculate()
     {
-        super.onResume();
-        searchCustomers();
+        String mKeepFish = mKeepFishView.getText().toString();
+        String mTakeFish = mTakeFishView.getText().toString();
+        double keepFish = 0.0;
+        double takeFish = 0.0;
+
+        if(mKeepFish.equals(""))
+        {
+            takeFish = Double.parseDouble(mTakeFish);
+        }
+        else if(mTakeFish.equals(""))
+        {
+            keepFish = Double.parseDouble(mKeepFish);
+        }
+        else {
+            keepFish = Double.parseDouble(mKeepFish);
+            takeFish = Double.parseDouble(mTakeFish);
+        }
+        mTotalFishView.setText(BigDecimal.valueOf(keepFish).subtract(BigDecimal.valueOf(takeFish)) + "");
+        return false;
     }
 
     private void searchCustomers()
     {
+        final ArrayAdapter<String> listAdapter;
+
         //Search text
         final ListView itemList = (ListView)findViewById(R.id.listView);
-        String [] listViewAdapterContent; //{"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
+        String [] listViewAdapterContent;
 
         //Get customers from database
         CustomerManager customerManager = new CustomerManager(getApplicationContext());
-        Cursor searchCustomers = customerManager.getSearchCustomers();
+        Cursor searchCustomers = customerManager.getSearchAllCustomers();
 
         int i = 0;
         listViewAdapterContent = new String[searchCustomers.getCount()];
@@ -133,7 +227,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // make Toast when click
                 //Toast.makeText(getApplicationContext(), "Position " + position, Toast.LENGTH_LONG).show();
-                String item = AddNewCustomerActivity.this.listAdapter.getItem(position);
+                String item = listAdapter.getItem(position);
                 String[] fullname = item.split("-");
                 mFullNameView.setText(fullname[0].trim());
                 mMobileView.setText(fullname[1].trim());
@@ -149,39 +243,17 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                AddNewCustomerActivity.this.listAdapter.getFilter().filter(s);
+                listAdapter.getFilter().filter(s);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (mFullNameView.getText().toString().equals("") || AddNewCustomerActivity.this.listAdapter.isEmpty()) {
+                if (mFullNameView.getText().toString().equals("") || listAdapter.isEmpty()) {
                     itemList.setVisibility(View.GONE);
                     mMobileView.setText("");
                 }
             }
         });
-    }
-
-    public void GetTimePicker(final Object objText)
-    {
-        //https://www.journaldev.com/9976/android-date-time-picker-dialog
-        // Get Current Time
-        final Calendar c = Calendar.getInstance();
-        int mHour = c.get(Calendar.HOUR_OF_DAY);
-        int mMinute = c.get(Calendar.MINUTE);
-
-        // Launch Time Picker Dialog
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                new TimePickerDialog.OnTimeSetListener() {
-
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay,
-                                          int minute) {
-                        EditText editText = (EditText) objText;
-                        editText.setText(String.format("%02d:%02d", hourOfDay, minute));
-                    }
-                }, mHour, mMinute, true);
-        timePickerDialog.show();
     }
 
     /**
@@ -196,37 +268,23 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
         // Reset errors.
         mFullNameView.setError(null);
-        mMobileView.setError(null);
-        mDatInView.setError(null);
-        mFeedTypeView.setError(null);
-        mFeedTypeView.setError(null);
 
         // Store values at the time of the login attempt.
-        String fullname = mFullNameView.getText().toString();
+        String fullName = mFullNameView.getText().toString();
         String mobile = mMobileView.getText().toString();
-        String dateIn = mDatInView.getText().toString();
+        String totalFish = mTotalFishView.getText().toString();
+        String keepFish = mKeepFishView.getText().toString();
+        String takeFish = mTakeFishView.getText().toString();
+        String feeDoFish = mFeeDoFishView.getText().toString();
         String note = mNoteView.getText().toString();
-        boolean feedType = mFeedTypeView.isChecked();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid mobile, if the user entered one.
-        if (!TextUtils.isEmpty(mobile) && !isMobileValid(mobile)) {
-            mMobileView.setError(getString(R.string.error_invalid_mobile));
-            focusView = mMobileView;
-            cancel = true;
-        }
-
-        if (TextUtils.isEmpty(fullname)) {
+        if (TextUtils.isEmpty(fullName)) {
             mFullNameView.setError(getString(R.string.error_field_required));
             focusView = mFullNameView;
-            cancel = true;
-        }
-
-        if (TextUtils.isEmpty(dateIn)) {
-            mDatInView.setError(getString(R.string.error_field_required));
-            focusView = mDatInView;
             cancel = true;
         }
 
@@ -238,7 +296,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask(fullname, mobile, dateIn, feedType, note);
+            mCustomerTask = new CustomerActionTask(mobile, keepFish, takeFish, totalFish, feeDoFish, note);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -289,18 +347,20 @@ public class AddNewCustomerActivity extends AppCompatActivity {
      */
     public class CustomerActionTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mFullName;
         private final String mMobile;
-        private final String mDateIn;
+        private final String mKeepFish;
+        private final String mTakeFish;
+        private final String mTotalFish;
+        private final String mFeeDoFish;
         private final String mNote;
-        private final boolean mFeedType;
 
-        CustomerActionTask(String fullname, String mobile, String dateIn, boolean feedType, String note) {
-            mFullName = fullname;
+        CustomerActionTask(String mobile, String keepFish, String takeFish, String totalFish, String feeDoFish, String note) {
             mMobile = mobile;
-            mDateIn = dateIn;
+            mKeepFish = keepFish;
+            mTakeFish = takeFish;
+            mTotalFish = totalFish;
+            mFeeDoFish = feeDoFish;
             mNote = note;
-            mFeedType = feedType;
         }
 
         @Override
@@ -318,29 +378,19 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mCustomerTask = null;
             showProgress(false);
-            DateFormat currentDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-            Date currentDate = new Date();
-            String fullDateIn = currentDateFormat.format(currentDate) + " " + mDateIn + ":00";
 
             if (success) {
-                CustomerManager customer = new CustomerManager(getApplicationContext());
-                long custId = customer.createCustomer(mFullName, mMobile);
+                finish();
+                CustomerManager customerManager = new CustomerManager(getApplicationContext());
+                String custId = customerManager.checkCustomerExisted(mMobile) + "";
 
-                FishingManager fishing = new FishingManager(getApplicationContext());
-                long fishingId = fishing.createFishingEntry(custId, fullDateIn, mFeedType ? 1 : 0, mNote);
+                KeepFishingManager keepFishingManager = new KeepFishingManager(getApplicationContext());
 
-                KeepFishingManager keepFishing = new KeepFishingManager(getApplicationContext());
-                long keepFishingId = keepFishing.createKeepFishingEntry(custId, 0, 0, 0, 0, 0, "");
+                keepFishingManager.updateKeepFishingEntry(custId, "0", "0", mKeepFish, mTakeFish, mTotalFish, mNote + " - " + getString(R.string.fee_do_fish) + " : " + mFeeDoFish);
+                Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
 
-                if(fishingId == -1)
-                {
-                    Utils.Alert(AddNewCustomerActivity.this, getString(R.string.fishing_status));
-                }
-                else {
-                    finish();
-                }
             } else {
-                Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));
+                Utils.Alert(getApplicationContext(), getString(R.string.action_error));
             }
         }
 

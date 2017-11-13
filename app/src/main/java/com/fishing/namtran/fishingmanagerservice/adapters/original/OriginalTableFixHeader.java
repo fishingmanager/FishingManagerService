@@ -99,10 +99,8 @@ public class OriginalTableFixHeader {
                 context.getString(R.string.mobile),
                 context.getString(R.string.date_in),
                 context.getString(R.string.date_out),
-                context.getString(R.string.feed_type),
-                context.getString(R.string.keep_hours),
-                context.getString(R.string.no_keep_hours),
                 context.getString(R.string.total_hours),
+                context.getString(R.string.feed_type),
                 context.getString(R.string.keep_fish),
                 context.getString(R.string.take_fish),
                 context.getString(R.string.total_fish),
@@ -121,12 +119,10 @@ public class OriginalTableFixHeader {
 
         Date currentDate = new Date();
         String dateFishing = currentDateFormat.format(currentDate);
-        items.add(new Nexus("Ngay: " + dateFishing));
+        items.add(new Nexus(dateFishing));
 
         Cursor fishings = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
         Cursor settings = (new SettingsManager(context)).getSettingEntry("1");
-        String totalHours = null;
-        String totalMoney = null;
         String priceFishing = null;
         String packagePrice = null;
         int priceFeedType = 0;
@@ -142,41 +138,45 @@ public class OriginalTableFixHeader {
             String dateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
             String dateOut = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
             int feedType = fishings.getInt(fishings.getColumnIndexOrThrow(Fishings.Properties.FEED_TYPE));
+            String dateInView = "", dateOutView = "", totalHoursView = "";
 
             try {
+                Calendar cal = Calendar.getInstance();
+
+                //Date in & out
+                cal.setTime(dateFormat.parse(dateIn));
+                dateInView = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+
                 if(dateOut != null) {
+                    cal.setTime(dateFormat.parse(dateOut));
+                    dateOutView = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+
                     long diff = (dateFormat.parse(dateOut).getTime() - dateFormat.parse(dateIn).getTime());
                     long diffSeconds = diff / 1000 % 60;
                     long diffMinutes = diff / (60 * 1000) % 60;
                     long diffHours = diff / (60 * 60 * 1000);
-                    totalHours = diffHours + ":" + diffMinutes;
+                    totalHoursView = String.format("%02d:%02d", diffHours, diffMinutes);
                 }
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(dateFormat.parse(dateIn));
-                dateIn = cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE);
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-            totalMoney = ((feedType == 1 ? priceFeedType : 0) + Integer.parseInt(priceFishing)) + "";
 
             items.add(new Nexus(
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties._ID)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.FULLNAME)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.MOBILE)),
-                    dateIn,
-                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT)),
+                    dateInView,
+                    dateOutView,
+                    totalHoursView,
                     feedType == 1 ? context.getString(R.string.yes) : context.getString(R.string.no),
-                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_HOURS)),
-                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.NO_KEEP_HOURS)),
-                    "0",
                     fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TAKE_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH)),
-                    totalMoney,
+                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
         }
-
+        items.add(new Nexus(context.getString(R.string.total_all) + ": "));
         fishings.close();
         return items;
     }

@@ -81,7 +81,7 @@ public class KeepFishingManager {
         return false;
     }
 
-    public void updateKeepFishingEntry(long mCustomerId, int mKeepHours, int mNoKeepHours, int mKeepFish, int mTakeFish, int mTotalFish, String mNote) {
+    public void updateKeepFishingEntry(String mCustomerId, String mKeepHours, String mNoKeepHours, String mKeepFish, String mTakeFish, String mTotalFish, String mNote) {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
@@ -96,7 +96,7 @@ public class KeepFishingManager {
 
         // Which row to update, based on the title
         String selection = KeepFishing.Properties.CUSTOMER_ID + " = ?";
-        String[] selectionArgs = { Long.toString(mCustomerId) };
+        String[] selectionArgs = { mCustomerId };
 
         int count = db.update(
                 KeepFishing.Properties.TABLE_NAME,

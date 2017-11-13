@@ -48,6 +48,76 @@ public class FishingManager {
         return fishingId;
     }
 
+    public boolean updateCloseFishingEntry(String mFishingId, String mDateOut, String mFeedType, String mKeepFish, String mTakeFish, String mTotalFish, String mTotalMoney, String mNote) {
+
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(Fishings.Properties.DATE_OUT, mDateOut);
+        values.put(Fishings.Properties.FEED_TYPE, mFeedType);
+        values.put(Fishings.Properties.TOTAL_MONEY, mTotalMoney);
+        values.put(Fishings.Properties.NOTE, mNote);
+
+        // Which row to update, based on the title
+        String selection = Fishings.Properties._ID + " = ?";
+        String[] selectionArgs = { mFishingId };
+
+        //Update fishings
+        db.update(
+                Fishings.Properties.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        String cusId = getCustomerByFishingId(mFishingId);
+
+        //Update keep fishing
+        KeepFishingManager keepFishingManager = new KeepFishingManager(context);
+        keepFishingManager.updateKeepFishingEntry(cusId, "0", "0", mKeepFish, mTakeFish, mTotalFish, "");
+
+        //close connection
+        db.close();
+        return true;
+    }
+
+    public String getCustomerByFishingId(String fishingId) {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                Fishings.Properties.CUSTOMER_ID,
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = Fishings.Properties._ID + " = ?";
+        String[] selectionArgs = { fishingId };
+
+        Cursor cursor = db.query(
+                Fishings.Properties.TABLE_NAME,              // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        String cusId = "";
+
+        if(cursor.moveToNext())
+        {
+            cusId = cursor.getString(cursor.getColumnIndexOrThrow(Fishings.Properties.CUSTOMER_ID));
+        }
+        cursor.close();
+        db.close();
+        mDbHelper.close();
+        return cusId;
+    }
+
     public Cursor getFishingAllEntries() {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
@@ -217,7 +287,7 @@ public class FishingManager {
         db = mDbHelper.getReadableDatabase();
 
         String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.FEED_TYPE + ", fishing." + Fishings.Properties.NOTE
-                                + ", fishing." + Fishings.Properties._ID + ", customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE
+                                + ", fishing." + Fishings.Properties._ID + ", fishing." + Fishings.Properties.TOTAL_MONEY + " , customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE
                                 + ", keepfishing." + KeepFishing.Properties.KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.NO_KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.KEEP_FISH
                                 + ", keepfishing." + KeepFishing.Properties.TAKE_FISH + ", keepfishing." + KeepFishing.Properties.TOTAL_FISH +
                         " FROM " +  Fishings.Properties.TABLE_NAME + " fishing, " + Customers.Properties.TABLE_NAME + " customer, " + KeepFishing.Properties.TABLE_NAME + " keepfishing" +

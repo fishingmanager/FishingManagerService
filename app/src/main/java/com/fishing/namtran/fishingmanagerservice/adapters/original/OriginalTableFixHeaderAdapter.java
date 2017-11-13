@@ -54,20 +54,18 @@ public class OriginalTableFixHeaderAdapter extends TableFixHeaderAdapter<
     @Override
     protected List<Integer> getHeaderWidths() {
         Integer[] witdhs = {
-                (int) context.getResources().getDimension(R.dimen._150dp),
+                (int) context.getResources().getDimension(R.dimen._100dp),
                 (int) context.getResources().getDimension(R.dimen._120dp),
-                (int) context.getResources().getDimension(R.dimen._170dp),
-                (int) context.getResources().getDimension(R.dimen._170dp),
-                (int) context.getResources().getDimension(R.dimen._110dp),
+                (int) context.getResources().getDimension(R.dimen._80dp),
+                (int) context.getResources().getDimension(R.dimen._60dp),
+                (int) context.getResources().getDimension(R.dimen._60dp),
+                (int) context.getResources().getDimension(R.dimen._70dp),
                 (int) context.getResources().getDimension(R.dimen._80dp),
                 (int) context.getResources().getDimension(R.dimen._80dp),
                 (int) context.getResources().getDimension(R.dimen._80dp),
                 (int) context.getResources().getDimension(R.dimen._80dp),
-                (int) context.getResources().getDimension(R.dimen._80dp),
-                (int) context.getResources().getDimension(R.dimen._80dp),
-                (int) context.getResources().getDimension(R.dimen._80dp),
-                (int) context.getResources().getDimension(R.dimen._110dp),
-                (int) context.getResources().getDimension(R.dimen._170dp)
+                (int) context.getResources().getDimension(R.dimen._120dp),
+                (int) context.getResources().getDimension(R.dimen._200dp)
         };
 
         return Arrays.asList(witdhs);

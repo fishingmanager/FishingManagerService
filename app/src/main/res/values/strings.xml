@@ -37,6 +37,7 @@
     <string name="no">Khong</string>
     <string name="update_status">Cap Nhat Khach Hang</string>
     <string name="fee_do_fish">Phi Lam Ca</string>
+    <string name="total_all">Tong</string>
 
     <string name="customer_manager">Quan ly khach hang</string>
     <string name="report">Bao cao</string>

@@ -119,5 +119,16 @@ public class CustomerManager {
         return db.rawQuery(query, null);
     }
 
+    public Cursor getSearchAllCustomers() {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getReadableDatabase();
+
+        String query = "SELECT customer." + Customers.Properties._ID + ", customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE +
+                " FROM " +  Customers.Properties.TABLE_NAME + " customer LEFT JOIN " + KeepFishing.Properties.TABLE_NAME + " keepFishing" +
+                " WHERE " + "customer." + Customers.Properties._ID + " = " + "keepFishing." + Fishings.Properties.CUSTOMER_ID;
+
+        return db.rawQuery(query, null);
+    }
+
 }
 

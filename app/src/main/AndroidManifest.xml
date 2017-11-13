@@ -33,7 +33,8 @@
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".UpdateCustomerActivity"
-            android:label="@string/update_status"></activity>
+            android:label="@string/update_status" />
+        <activity android:name=".TakeFishActivity"></activity>
     </application>
 
 </manifest>
