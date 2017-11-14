@@ -39,7 +39,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Filter;
 
 /**
@@ -60,7 +62,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
     private CheckBox mFeedTypeView;
     private View mProgressView;
     private View mSubmitFormView;
-    private ArrayAdapter<String> listAdapter;
+    private Cursor SearchCustomers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,25 +97,30 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             }
         });
 
-        searchCustomers();
+        //Get customers from database by current day
+        DateFormat currentDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        Date currentDate = new Date();
+
+        CustomerManager customerManager = new CustomerManager(getApplicationContext());
+        //SearchCustomers = customerManager.getSearchCustomers(currentDateFormat.format(currentDate));
+        SearchCustomers = customerManager.getSearchAllCustomers();
+
+        searchCustomers(SearchCustomers);
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        searchCustomers();
+        //searchCustomers(SearchCustomers);
     }
 
-    private void searchCustomers()
+    private void searchCustomers(Cursor searchCustomers)
     {
         //Search text
         final ListView itemList = (ListView)findViewById(R.id.listView);
         String [] listViewAdapterContent; //{"School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring", "School", "House", "Building", "Food", "Sports", "Dress", "Ring"};
-
-        //Get customers from database
-        CustomerManager customerManager = new CustomerManager(getApplicationContext());
-        Cursor searchCustomers = customerManager.getSearchCustomers();
+        final ArrayAdapter<String> listAdapter;
 
         int i = 0;
         listViewAdapterContent = new String[searchCustomers.getCount()];
@@ -133,7 +140,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // make Toast when click
                 //Toast.makeText(getApplicationContext(), "Position " + position, Toast.LENGTH_LONG).show();
-                String item = AddNewCustomerActivity.this.listAdapter.getItem(position);
+                String item = listAdapter.getItem(position);
                 String[] fullname = item.split("-");
                 mFullNameView.setText(fullname[0].trim());
                 mMobileView.setText(fullname[1].trim());
@@ -149,12 +156,12 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                AddNewCustomerActivity.this.listAdapter.getFilter().filter(s);
+                listAdapter.getFilter().filter(s);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (mFullNameView.getText().toString().equals("") || AddNewCustomerActivity.this.listAdapter.isEmpty()) {
+                if (mFullNameView.getText().toString().equals("") || listAdapter.isEmpty()) {
                     itemList.setVisibility(View.GONE);
                     mMobileView.setText("");
                 }
@@ -324,12 +331,11 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
             if (success) {
                 CustomerManager customer = new CustomerManager(getApplicationContext());
-                long custId = customer.createCustomer(mFullName, mMobile);
-
                 FishingManager fishing = new FishingManager(getApplicationContext());
-                long fishingId = fishing.createFishingEntry(custId, fullDateIn, mFeedType ? 1 : 0, mNote);
-
                 KeepFishingManager keepFishing = new KeepFishingManager(getApplicationContext());
+
+                long custId = customer.createCustomer(mFullName, mMobile);
+                long fishingId = fishing.createFishingEntry(custId, fullDateIn, mFeedType ? 1 : 0, mNote);
                 long keepFishingId = keepFishing.createKeepFishingEntry(custId, 0, 0, 0, 0, 0, "");
 
                 if(fishingId == -1)

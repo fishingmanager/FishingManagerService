@@ -11,18 +11,18 @@
         android:title="@string/add_customer"/>
 
     <item
-        android:id="@+id/report"
-        android:orderInCategory="2"
-        app:showAsAction="ifRoom|withText"
-        android:icon="@android:drawable/ic_menu_report_image"
-        android:title="@string/report"/>
-
-    <item
         android:id="@+id/take_fish"
-        android:orderInCategory="3"
+        android:orderInCategory="2"
         app:showAsAction="ifRoom|withText"
         android:icon="@android:drawable/ic_menu_myplaces"
         android:title="@string/take_fish"/>
+
+    <item
+        android:id="@+id/report"
+        android:orderInCategory="3"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@android:drawable/ic_menu_report_image"
+        android:title="@string/report"/>
 
     <item
         android:id="@+id/settings"

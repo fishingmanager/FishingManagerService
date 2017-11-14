@@ -107,14 +107,16 @@ public class CustomerManager {
         mDbHelper.close();
     }
 
-    public Cursor getSearchCustomers() {
+    public Cursor getSearchCustomers(String dateIn) {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
         String query = "SELECT fishing." + Fishings.Properties.DATE_OUT
                 + ", customer." + Customers.Properties._ID + ", customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE +
                 " FROM " +  Customers.Properties.TABLE_NAME + " customer LEFT JOIN " + Fishings.Properties.TABLE_NAME + " fishing" +
-                " WHERE " + "customer." + Customers.Properties._ID + " = " + "fishing." + Fishings.Properties.CUSTOMER_ID + " AND " + "fishing." + Fishings.Properties.DATE_OUT + " IS NOT NULL";
+                " WHERE " + "customer." + Customers.Properties._ID + " = " + "fishing." + Fishings.Properties.CUSTOMER_ID + " AND " + "fishing." + Fishings.Properties.DATE_OUT + " IS NOT NULL" + " AND " +
+                            "fishing." + Fishings.Properties.DATE_IN + " NOT LIKE '"+ dateIn +"%'" +
+                " GROUP BY " + "customer." + Customers.Properties._ID;
 
         return db.rawQuery(query, null);
     }

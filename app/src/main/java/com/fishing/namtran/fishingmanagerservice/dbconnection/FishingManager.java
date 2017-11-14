@@ -180,6 +180,35 @@ public class FishingManager {
         return cursor;
     }
 
+    public Cursor getFishingEntryByFishingId(String mFishingId) {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                Fishings.Properties.CUSTOMER_ID,
+                Fishings.Properties.DATE_IN,
+                Fishings.Properties.DATE_OUT,
+                Fishings.Properties.NOTE,
+        };
+
+        // Filter results WHERE "title" = 'My Title'
+        String selection = Fishings.Properties._ID + " = ?";
+        String[] selectionArgs = { mFishingId };
+
+        Cursor cursor = db.query(
+                Fishings.Properties.TABLE_NAME,              // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+        return cursor;
+    }
+
     public int setFeedTypeStatus(String fishingId) {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();

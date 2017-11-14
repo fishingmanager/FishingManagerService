@@ -66,13 +66,24 @@ public class OriginalTableFixHeader {
                 //Snackbar.make(viewGroup, "Click on " + item.data[column + 1] + " (" + row + "," + column + ")", Snackbar.LENGTH_SHORT).show();
                 //viewGroup.vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorYellow));
 
-                if(column == 5)
+                String fishingId = item.data[0];
+                FishingManager fishings = new FishingManager(context);
+                Cursor cursors = fishings.getFishingEntryByFishingId(fishingId);
+
+                String dateOut = null;
+                if (cursors.moveToNext())
                 {
-                    FishingManager fishings = new FishingManager(context);
-                    int status = fishings.setFeedTypeStatus(item.data[0]);
-                    viewGroup.textView.setText(status == 1 ? context.getString(R.string.yes) : context.getString(R.string.no));
-                } else {
-                    Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
+                    dateOut = cursors.getString(cursors.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
+                }
+
+                if(dateOut == null) {
+                    if (column == 5) {
+                        int status = fishings.setFeedTypeStatus(fishingId);
+                        viewGroup.textView.setText(status == 1 ? context.getString(R.string.yes) : context.getString(R.string.no));
+                        Utils.Redirect(context, ManagerCustomerActivity.class);
+                    } else {
+                        Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
+                    }
                 }
             }
         };
@@ -126,6 +137,10 @@ public class OriginalTableFixHeader {
         String priceFishing = null;
         String packagePrice = null;
         int priceFeedType = 0;
+        int onlineCount = 0;
+        int totalFisher = fishings.getCount();
+        int totalMoney = 0;
+        int totalFish = 0;
 
         while (settings.moveToNext()) {
             priceFishing = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING));
@@ -157,10 +172,14 @@ public class OriginalTableFixHeader {
                     long diffHours = diff / (60 * 60 * 1000);
                     totalHoursView = String.format("%02d:%02d", diffHours, diffMinutes);
                 }
+                else onlineCount++;
 
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+            totalFish += fishings.getInt(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
+            totalMoney += fishings.getInt(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY));
 
             items.add(new Nexus(
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties._ID)),
@@ -176,7 +195,7 @@ public class OriginalTableFixHeader {
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
         }
-        items.add(new Nexus(context.getString(R.string.total_all) + ": "));
+        items.add(new Nexus(context.getString(R.string.total_all) + ": " + totalFisher + "/" + onlineCount, "", "", "", "", "", "", "", "", totalFish + "", totalMoney + "", ""));
         fishings.close();
         return items;
     }
