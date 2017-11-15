@@ -27,6 +27,9 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +54,7 @@ public class TakeFishActivity extends AppCompatActivity {
     private View mProgressView;
     private View mSubmitFormView;
     private Cursor SearchCustomerResults;
+    private double mTotalFish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,17 +130,19 @@ public class TakeFishActivity extends AppCompatActivity {
 
         if(mKeepFish.equals(""))
         {
-            takeFish = Double.parseDouble(mTakeFish);
+            if(!mTakeFish.equals(""))
+                takeFish = Double.parseDouble(mTakeFish);
         }
         else if(mTakeFish.equals(""))
         {
-            keepFish = Double.parseDouble(mKeepFish);
+            if(!mKeepFish.equals(""))
+                keepFish = Double.parseDouble(mKeepFish);
         }
         else {
             keepFish = Double.parseDouble(mKeepFish);
             takeFish = Double.parseDouble(mTakeFish);
         }
-        mTotalFishView.setText(BigDecimal.valueOf(keepFish).subtract(BigDecimal.valueOf(takeFish)) + "");
+        mTotalFishView.setText(BigDecimal.valueOf(keepFish).add(BigDecimal.valueOf(mTotalFish)).subtract(BigDecimal.valueOf(takeFish)) + "");
         return false;
     }
 
@@ -171,9 +177,12 @@ public class TakeFishActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), "Position " + position, Toast.LENGTH_LONG).show();
                 String item = listAdapter.getItem(position);
                 String[] fullname = item.split("-");
+                mKeepFishView.setText("");
+                mTakeFishView.setText("");
                 mFullNameView.setText(fullname[0].trim());
                 mMobileView.setText(fullname[1].trim());
-                mKeepFishView.setText(fullname[2].trim());
+                mTotalFish = Double.parseDouble(fullname[2].trim());
+                mTotalFishView.setText(mTotalFish + "");
                 mNoteView.setText(notes.get(fullname[1].trim()));
                 itemList.setVisibility(View.GONE);
             }
@@ -323,6 +332,10 @@ public class TakeFishActivity extends AppCompatActivity {
             mCustomerTask = null;
             showProgress(false);
 
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date currentDate = new Date();
+            String dateTakeFish = dateFormat.format(currentDate);
+
             if (success) {
                 finish();
                 CustomerManager customerManager = new CustomerManager(getApplicationContext());
@@ -330,7 +343,11 @@ public class TakeFishActivity extends AppCompatActivity {
 
                 KeepFishingManager keepFishingManager = new KeepFishingManager(getApplicationContext());
 
-                keepFishingManager.updateKeepFishingEntry(custId, "0", "0", mKeepFish, mTakeFish, mTotalFish, mNote);
+                keepFishingManager.updateKeepFishingEntry(custId, "0", "0", mKeepFish, mTakeFish, mTotalFish,
+                        "\n*" + dateTakeFish + ": " + " - " + getString(R.string.keep_fish) + ": " + mKeepFish
+                        + " - " + getString(R.string.take_fish) + ": " + mTakeFish + " - " + getString(R.string.total_fish) + ": " + mTotalFishView.getText().toString()
+                        + " - " + getString(R.string.fee_do_fish) + ": " + mFeeDoFishView.getText().toString() + "\n" + mNote
+                );
                 Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
 
             } else {
