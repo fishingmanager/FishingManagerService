@@ -4,7 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 
@@ -71,6 +73,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private long mFeeFeedType;
     private int mPriceFeedType;
     private int mPriceFishing;
+    private double mTotalFish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +99,6 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.update_customer_progress);
 
         int feedTypeStatus = 0;
-        double keepFish = 0.0;
         int packagePrice = 0;
 
         Cursor fishings = (new FishingManager(getApplicationContext())).getFishingEntriesById(mFishingId);
@@ -127,17 +129,15 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             mDatInView.setText(String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
             feedTypeStatus = fishings.getInt(fishings.getColumnIndexOrThrow(Fishings.Properties.FEED_TYPE));
             mFeedTypeView.setChecked(feedTypeStatus == 1 ? true : false);
-            keepFish = fishings.getDouble(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
+            mTotalFish = fishings.getDouble(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
             mNoteView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE)));
         }
         fishings.close();
 
         //
-        double takeFish = Double.parseDouble(mTakeFishView.getText().toString());
         mFeeFeedType = feedTypeStatus == 1 ? mPriceFeedType : 0;
 
-        mKeepFishView.setText(keepFish + "");
-        mTotalFishView.setText((keepFish - takeFish) + "");
+        mTotalFishView.setText(mTotalFish + "");
         mTotalMoneyView.setText((mFeeDoFish + mFeePackage + mFeeFeedType) + "");
 
         //Events action
@@ -238,17 +238,21 @@ public class UpdateCustomerActivity extends AppCompatActivity {
 
         if(mKeepFish.equals(""))
         {
+            if(mTakeFish.equals("")) mTakeFish = "0.0";
+            else
             takeFish = Double.parseDouble(mTakeFish);
         }
         else if(mTakeFish.equals(""))
         {
+            if(mKeepFish.equals("")) mKeepFish = "0.0";
+            else
             keepFish = Double.parseDouble(mKeepFish);
         }
         else {
             keepFish = Double.parseDouble(mKeepFish);
             takeFish = Double.parseDouble(mTakeFish);
         }
-        mTotalFishView.setText(BigDecimal.valueOf(keepFish).subtract(BigDecimal.valueOf(takeFish)) + "");
+        mTotalFishView.setText(BigDecimal.valueOf(keepFish).add(BigDecimal.valueOf(mTotalFish)).subtract(BigDecimal.valueOf(takeFish)) + "");
         return false;
     }
 
@@ -283,59 +287,52 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                                 long diffSeconds = diff / 1000 % 60;
                                 long diffMinutes = diff / (60 * 1000) % 60;
                                 long diffHours = diff / (60 * 60 * 1000);
-                                totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
 
-                                long totalFee = 0;
-                                long point2Hours = 120000;
-                                long point3Hours = 170000;
-                                long point4Hours = mPriceFishing;
-                                long extra30Mins = 20000;
+                                if(diffHours < 0 || diffMinutes < 0) {
+                                    dateOut.setText("");
+                                    Utils.Alert(UpdateCustomerActivity.this, "ERROR !");
+                                }
+                                else {
+                                    long totalFee = 0;
+                                    long point2Hours = 120000;
+                                    long point3Hours = 170000;
+                                    long point4Hours = mPriceFishing;
+                                    long extra30Mins = 20000;
 
-                                if(diffHours < 3)
-                                {
-                                    if(diffHours < 2)
+                                    totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
+
+                                    if (diffHours < 3) {
+                                        if (diffHours < 2) {
+                                            totalFee = point2Hours;
+                                        } else if (diffHours == 2) {
+                                            totalFee = point2Hours;
+                                            if (diffMinutes >= 15) {
+                                                totalFee = point3Hours;
+                                            }
+                                        }
+                                    } else if (diffHours >= 3 && diffHours < 4) // >3h
                                     {
-                                        totalFee = point2Hours;
-                                    }
-                                    else
-                                    if(diffHours == 2)
-                                    {
-                                        totalFee = point2Hours;
-                                        if(diffMinutes >= 15)
-                                        {
+                                        if (diffMinutes >= 15) {
+                                            totalFee = point4Hours;
+                                        } else {
                                             totalFee = point3Hours;
                                         }
-                                    }
-                                }
-                                else
-                                if(diffHours >= 3 && diffHours < 4) // >3h
-                                {
-                                    if(diffMinutes >= 15)
+                                    } else // >4h
                                     {
-                                        totalFee = point4Hours;
-                                    }
-                                    else
-                                    {
-                                        totalFee = point3Hours;
-                                    }
-                                }
-                                else // >4h
-                                {
-                                    long extraHours = diffHours - 4;
-                                    totalFee = point4Hours + (extraHours*2)*extra30Mins; //30 mins are 20k
-                                    if(diffMinutes >= 10) // > 10mins
-                                    {
-                                        if(diffMinutes <= 30) {
-                                            totalFee += extra30Mins;
-                                        }
-                                        else {
-                                            totalFee += 2*extra30Mins;
+                                        long extraHours = diffHours - 4;
+                                        totalFee = point4Hours + (extraHours * 2) * extra30Mins; //30 mins are 20k
+                                        if (diffMinutes >= 10) // > 10mins
+                                        {
+                                            if (diffMinutes <= 30) {
+                                                totalFee += extra30Mins;
+                                            } else {
+                                                totalFee += 2 * extra30Mins;
+                                            }
                                         }
                                     }
+                                    mFeePackage = totalFee;
+                                    mTotalMoneyView.setText(mFeePackage + mFeeDoFish + mFeeFeedType + "");
                                 }
-
-                                mFeePackage = totalFee;
-                                mTotalMoneyView.setText(mFeePackage + mFeeDoFish + mFeeFeedType + "");
                             }
 
                         } catch (ParseException e) {

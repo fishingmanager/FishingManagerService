@@ -35,6 +35,10 @@ public abstract  class TableFixHeaderAdapter<
     private LongClickListener<TBODY, VSECTION> longClickListenerSection;
 
 
+    public interface OnLoad<T, V> {
+        void onLoad(T t, V v);
+    }
+
     public interface ClickListener<T, V> {
         void onClickItem(T t, V v, int row, int column);
     }

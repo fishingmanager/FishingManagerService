@@ -1,14 +1,19 @@
 package com.fishing.namtran.fishingmanagerservice.adapters.original;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
 
 import com.fishing.namtran.fishingmanagerservice.ManagerCustomerActivity;
 import com.fishing.namtran.fishingmanagerservice.R;
 import com.fishing.namtran.fishingmanagerservice.UpdateCustomerActivity;
 import com.fishing.namtran.fishingmanagerservice.Utils;
+import com.fishing.namtran.fishingmanagerservice.adapters.original_sortable.NexusWithImage;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
@@ -32,6 +37,8 @@ import java.util.List;
  */
 public class OriginalTableFixHeader {
     private Context context;
+    private int totalItems;
+    private int totalColumn = 12;
 
     public OriginalTableFixHeader(Context context) {
         this.context = context;
@@ -48,11 +55,27 @@ public class OriginalTableFixHeader {
         adapter.setSection(body);
 
         setListeners(adapter);
-
+        //onLoad(adapter);
         return adapter;
     }
 
-    private void setListeners(OriginalTableFixHeaderAdapter adapter) {
+    private  void onLoad(final OriginalTableFixHeaderAdapter adapter)
+    {
+        Nexus ne = adapter.getBody().get(1);
+        //Utils.Alert(context, ne.data[1]);
+        //adapter.inflateBody().textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
+
+        TableFixHeaderAdapter.OnLoad<Nexus, OriginalCellViewGroup> load = new TableFixHeaderAdapter.OnLoad<Nexus, OriginalCellViewGroup>()
+        {
+            @Override
+            public void onLoad(Nexus item, OriginalCellViewGroup viewGroup)
+            {
+                //viewGroup.textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
+            }
+        };
+    }
+
+    private void setListeners(final OriginalTableFixHeaderAdapter adapter) {
         TableFixHeaderAdapter.ClickListener<String, OriginalCellViewGroup> clickListenerHeader = new TableFixHeaderAdapter.ClickListener<String, OriginalCellViewGroup>() {
             @Override
             public void onClickItem(String s, OriginalCellViewGroup viewGroup, int row, int column) {
@@ -66,23 +89,46 @@ public class OriginalTableFixHeader {
                 //Snackbar.make(viewGroup, "Click on " + item.data[column + 1] + " (" + row + "," + column + ")", Snackbar.LENGTH_SHORT).show();
                 //viewGroup.vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorYellow));
 
-                String fishingId = item.data[0];
-                FishingManager fishings = new FishingManager(context);
-                Cursor cursors = fishings.getFishingEntryByFishingId(fishingId);
+                if(totalItems != row) {
+                    final String fishingId = item.data[0];
+                    final FishingManager fishings = new FishingManager(context);
+                    Cursor cursors = fishings.getFishingEntryByFishingId(fishingId);
 
-                String dateOut = null;
-                if (cursors.moveToNext())
-                {
-                    dateOut = cursors.getString(cursors.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
-                }
+                    String dateOut = null;
+                    final int status;
+                    if (cursors.moveToNext()) {
+                        dateOut = cursors.getString(cursors.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
+                    }
 
-                if(dateOut == null) {
-                    if (column == 5) {
-                        int status = fishings.setFeedTypeStatus(fishingId);
-                        viewGroup.textView.setText(status == 1 ? context.getString(R.string.yes) : context.getString(R.string.no));
-                        Utils.Redirect(context, ManagerCustomerActivity.class);
-                    } else {
-                        Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
+                    if (dateOut == null) {
+                        if (column == 5) {
+                            status = fishings.setFeedTypeStatus(fishingId);
+                            viewGroup.textView.setText(status == 1 ? context.getString(R.string.yes) : context.getString(R.string.no));
+                            adapter.setBody(getBody());
+                        /*
+                            new AlertDialog.Builder(context)
+                                    .setTitle("Title")
+                                    .setMessage("Do you really want to whatever?")
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                            fishings.setFeedTypeStatus(fishingId);
+                                            Intent myIntent = new Intent(context,
+                                                    ManagerCustomerActivity.class);
+
+                                            myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                            // Closing all the Activities
+                                            myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                                            context.startActivity(myIntent);
+                                        }})
+                                    .setNegativeButton(android.R.string.no, null).show();*/
+
+                        } else {
+                            Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
+                        }
                     }
                 }
             }
@@ -101,8 +147,6 @@ public class OriginalTableFixHeader {
         adapter.setClickListenerBody(clickListenerBody);
         //adapter.setClickListenerSection(clickListenerSection);
     }
-
-
 
     private List<String> getHeader() {
         final String headers[] = {
@@ -195,7 +239,8 @@ public class OriginalTableFixHeader {
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
         }
-        items.add(new Nexus(context.getString(R.string.total_all) + ": " + totalFisher + "/" + onlineCount, "", "", "", "", "", "", "", "", totalFish + "", totalMoney + "", ""));
+        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", "", totalFish + "", totalMoney + "", ""));
+        totalItems = items.size() - 1;
         fishings.close();
         return items;
     }
