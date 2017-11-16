@@ -29,6 +29,7 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 
@@ -479,10 +480,19 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             Date currentDate = new Date();
             String fullDateOut = currentDateFormat.format(currentDate) + " " + mDateOut + ":00";
 
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String dateTakeFish = dateFormat.format(currentDate);
+
             if (success) {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
+                KeepFishingManager keepFishingManager = new KeepFishingManager(getApplicationContext());
+                String custId = fishingManager.getCustomerByFishingId(mFishingId);
+
                 if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mFeedType, mKeepFish, mTakeFish, mTotalFish, mFeeDoFish, mTotalMoney, mNote)) {
+                    if(!mKeepFish.equals("") || !mTakeFish.equals("")) {
+                        keepFishingManager.createLogsKeepFishingEntry(custId, mKeepFish, mTakeFish, mTotalFish, mFeeDoFish, "0", "0", "0", "", dateTakeFish);
+                    }
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {

@@ -26,6 +26,8 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.LogsKeepFishing;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -56,6 +58,7 @@ public class BuyFishActivity extends AppCompatActivity {
     private View mSubmitFormView;
     private Cursor SearchCustomerResults;
     private double mTotalFish;
+    private double priceBuyFish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +88,13 @@ public class BuyFishActivity extends AppCompatActivity {
             }
         });
 
+        Cursor settings = (new SettingsManager(getApplicationContext())).getSettingEntry("1");
+
+        if (settings.moveToNext()) {
+            priceBuyFish = settings.getDouble(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_BUY_FISH));
+        }
+        settings.close();
+
         mBuyFishView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -106,7 +116,7 @@ public class BuyFishActivity extends AppCompatActivity {
                     buyFish = Double.parseDouble(mBuyFish);
                 }
                 mTotalFishView.setText(BigDecimal.valueOf(mTotalFish).subtract(BigDecimal.valueOf(buyFish)) + "");
-                mTotalMoneyView.setText(BigDecimal.valueOf(40000).multiply(BigDecimal.valueOf(buyFish)) + "");
+                mTotalMoneyView.setText(BigDecimal.valueOf(priceBuyFish).multiply(BigDecimal.valueOf(buyFish)) + "");
             }
         });
 
@@ -156,13 +166,21 @@ public class BuyFishActivity extends AppCompatActivity {
 
                 //Get keep fishing detail
                 Cursor logsCuror = (new KeepFishingManager(getApplicationContext())).getLogsKeepFishing(logs.get(fullname[1].trim()));
-                String logsDetail = null;
+                String logsDetail = "";
 
                 while (logsCuror.moveToNext())
                 {
-                    logsDetail =  "\n*" + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.DATE_TIME)) + ": " + " - " + getString(R.string.keep_fish) + ": " +  logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.KEEP_FISH))
-                            + " - " + getString(R.string.take_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TAKE_FISH)) + " - " + getString(R.string.total_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TOTAL_FISH))
-                            + " - " + getString(R.string.fee_do_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.FEE_DO_FISH)) + "\n" + logsDetail;
+                    int status = logsCuror.getInt(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.STATUS));
+
+                    if(status == 1) {
+                        logsDetail = "\n*" + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.DATE_TIME)) + ": " + " - " + getString(R.string.buy_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.BUY_FISH))
+                                + " - " + getString(R.string.total_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TOTAL_FISH))
+                                + " - " + getString(R.string.total_money) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TOTAL_MONEY_BUY_FISH)) + "\n" + logsDetail;
+                    } else {
+                        logsDetail =  "\n*" + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.DATE_TIME)) + ": " + " - " + getString(R.string.keep_fish) + ": " +  logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.KEEP_FISH))
+                                + " - " + getString(R.string.take_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TAKE_FISH)) + " - " + getString(R.string.total_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TOTAL_FISH))
+                                + " - " + getString(R.string.fee_do_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.FEE_DO_FISH)) + "\n" + logsDetail;
+                    }
                 }
                 logsCuror.close();
                 mLogView.setText(logsDetail);

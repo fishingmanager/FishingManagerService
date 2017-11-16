@@ -155,6 +155,9 @@ public class KeepFishingManager {
                 LogsKeepFishing.Properties.TAKE_FISH,
                 LogsKeepFishing.Properties.FEE_DO_FISH,
                 LogsKeepFishing.Properties.TOTAL_FISH,
+                LogsKeepFishing.Properties.BUY_FISH,
+                LogsKeepFishing.Properties.TOTAL_MONEY_BUY_FISH,
+                LogsKeepFishing.Properties.STATUS,
                 LogsKeepFishing.Properties.DATE_TIME,
                 LogsKeepFishing.Properties.NOTE,
         };
