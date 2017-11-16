@@ -18,6 +18,8 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishing;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.KeepFishingManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.LogsKeepFishing;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 import com.inqbarna.tablefixheaders.adapters.BaseTableAdapter;
@@ -30,7 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by miguel on 12/02/2016.
@@ -38,7 +42,7 @@ import java.util.List;
 public class OriginalTableFixHeader {
     private Context context;
     private int totalItems;
-    private int totalColumn = 12;
+    private int totalColumn = 10;
 
     public OriginalTableFixHeader(Context context) {
         this.context = context;
@@ -134,6 +138,43 @@ public class OriginalTableFixHeader {
             }
         };
 
+        TableFixHeaderAdapter.LongClickListener<Nexus, OriginalCellViewGroup> longClickListenerBody = new TableFixHeaderAdapter.LongClickListener<Nexus, OriginalCellViewGroup >() {
+            @Override
+            public void onLongClickItem(Nexus item, OriginalCellViewGroup viewGroup, int row, int column) {
+                if (column == 6) {
+                    viewGroup.vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorBlue));
+
+                    String logsDetail = null;
+                    Cursor fishings = (new FishingManager(context)).getFishingEntryByFishingId(item.data[0]);
+                    if(fishings.moveToNext())
+                    {
+                        String custId = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.CUSTOMER_ID));
+                        Cursor logsCuror = (new KeepFishingManager(context)).getLogsKeepFishing(custId);
+
+                        while (logsCuror.moveToNext())
+                        {
+                            logsDetail =  "\n*" + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.DATE_TIME)) + ": " + " - " + context.getString(R.string.keep_fish) + ": " +  logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.KEEP_FISH))
+                                    + " - " + context.getString(R.string.take_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TAKE_FISH)) + " - " + context.getString(R.string.total_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.TOTAL_FISH))
+                                    + " - " + context.getString(R.string.fee_do_fish) + ": " + logsCuror.getString(logsCuror.getColumnIndexOrThrow(LogsKeepFishing.Properties.FEE_DO_FISH)) + "\n" + logsDetail;
+                        }
+                        logsCuror.close();
+                    }
+                    fishings.close();
+
+                    AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                    alertDialog.setTitle("Alert");
+                    alertDialog.setMessage(logsDetail);
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+                }
+            }
+        };
+
         TableFixHeaderAdapter.ClickListener<Nexus, OriginalCellViewGroup> clickListenerSection = new TableFixHeaderAdapter.ClickListener<Nexus, OriginalCellViewGroup>() {
             @Override
             public void onClickItem(Nexus item, OriginalCellViewGroup viewGroup, int row, int column) {
@@ -146,6 +187,7 @@ public class OriginalTableFixHeader {
         adapter.setClickListenerFirstBody(clickListenerBody);
         adapter.setClickListenerBody(clickListenerBody);
         //adapter.setClickListenerSection(clickListenerSection);
+        adapter.setLongClickListenerBody(longClickListenerBody);
     }
 
     private List<String> getHeader() {
@@ -156,8 +198,6 @@ public class OriginalTableFixHeader {
                 context.getString(R.string.date_out),
                 context.getString(R.string.total_hours),
                 context.getString(R.string.feed_type),
-                context.getString(R.string.keep_fish),
-                context.getString(R.string.take_fish),
                 context.getString(R.string.total_fish),
                 context.getString(R.string.total_money),
                 context.getString(R.string.note)
@@ -168,6 +208,13 @@ public class OriginalTableFixHeader {
 
     private List<Nexus> getBody() {
         List<Nexus> items = new ArrayList<>();
+        //String priceFishing = null;
+        //String packagePrice = null;
+        //int priceFeedType = 0;
+        int onlineCount = 0;
+        int totalMoney = 0;
+        int totalFish = 0;
+
         DateFormat currentDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -177,21 +224,17 @@ public class OriginalTableFixHeader {
         items.add(new Nexus(dateFishing));
 
         Cursor fishings = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
-        Cursor settings = (new SettingsManager(context)).getSettingEntry("1");
-        String priceFishing = null;
-        String packagePrice = null;
-        int priceFeedType = 0;
-        int onlineCount = 0;
+        //Cursor settings = (new SettingsManager(context)).getSettingEntry("1");
         int totalFisher = fishings.getCount();
-        int totalMoney = 0;
-        int totalFish = 0;
 
+        /*
         while (settings.moveToNext()) {
             priceFishing = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING));
             packagePrice = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING));
             priceFeedType = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE));
         }
         settings.close();
+        */
 
         while (fishings.moveToNext()) {
             String dateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
@@ -211,7 +254,7 @@ public class OriginalTableFixHeader {
                     dateOutView = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
 
                     long diff = (dateFormat.parse(dateOut).getTime() - dateFormat.parse(dateIn).getTime());
-                    long diffSeconds = diff / 1000 % 60;
+                    //long diffSeconds = diff / 1000 % 60;
                     long diffMinutes = diff / (60 * 1000) % 60;
                     long diffHours = diff / (60 * 60 * 1000);
                     totalHoursView = String.format("%02d:%02d", diffHours, diffMinutes);
@@ -233,13 +276,11 @@ public class OriginalTableFixHeader {
                     dateOutView,
                     totalHoursView,
                     feedType == 1 ? context.getString(R.string.yes) : context.getString(R.string.no),
-                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.KEEP_FISH)),
-                    fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TAKE_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
         }
-        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", "", totalFish + "", totalMoney + "", ""));
+        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", totalFish + "", totalMoney + "", ""));
         totalItems = items.size() - 1;
         fishings.close();
         return items;

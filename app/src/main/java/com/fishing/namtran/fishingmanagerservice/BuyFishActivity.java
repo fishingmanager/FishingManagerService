@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * A login screen that offers login via email/password.
  */
-public class TakeFishActivity extends AppCompatActivity {
+public class BuyFishActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -47,10 +47,9 @@ public class TakeFishActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView mFullNameView;
     private EditText mMobileView;
-    private EditText mKeepFishView;
-    private EditText mTakeFishView;
     private EditText mTotalFishView;
-    private EditText mFeeDoFishView;
+    private EditText mBuyFishView;
+    private EditText mTotalMoneyView;
     private EditText mNoteView;
     private EditText mLogView;
     private View mProgressView;
@@ -61,25 +60,24 @@ public class TakeFishActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_take_fish);
+        setContentView(R.layout.activity_buy_fish);
 
         // Set up the login form.
         mMobileView = (EditText) findViewById(R.id.mobile);
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
-        mKeepFishView = (EditText) findViewById(R.id.keep_fish);
-        mTakeFishView = (EditText) findViewById(R.id.take_fish);
+        mBuyFishView = (EditText) findViewById(R.id.buy_fish);
+        mTotalMoneyView = (EditText) findViewById(R.id.total_money);
         mTotalFishView = (EditText) findViewById(R.id.total_fish);
-        mFeeDoFishView = (EditText) findViewById(R.id.fee_do_fish);
         mNoteView = (EditText) findViewById(R.id.note);
         mLogView = (EditText) findViewById(R.id.log);
-        mSubmitFormView = findViewById(R.id.update_take_fish_form);
-        mProgressView = findViewById(R.id.update_take_fish_progress);
+        mSubmitFormView = findViewById(R.id.update_buy_fish_form);
+        mProgressView = findViewById(R.id.update_buy_fish_progress);
 
         CustomerManager customerManager = new CustomerManager(getApplicationContext());
         SearchCustomerResults = customerManager.getSearchAllCustomers();
 
         //Events action
-        Button mUpdateTakeFishButton = (Button) findViewById(R.id.update_take_fish_button);
+        Button mUpdateTakeFishButton = (Button) findViewById(R.id.update_buy_fish_button);
         mUpdateTakeFishButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,7 +85,7 @@ public class TakeFishActivity extends AppCompatActivity {
             }
         });
 
-        mKeepFishView.addTextChangedListener(new TextWatcher() {
+        mBuyFishView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -100,53 +98,19 @@ public class TakeFishActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                calculate();
-            }
-        });
+                String mBuyFish = mBuyFishView.getText().toString();
+                double buyFish = 0.0;
 
-        mTakeFishView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                calculate();
+                if(!mBuyFish.equals(""))
+                {
+                    buyFish = Double.parseDouble(mBuyFish);
+                }
+                mTotalFishView.setText(BigDecimal.valueOf(mTotalFish).subtract(BigDecimal.valueOf(buyFish)) + "");
+                mTotalMoneyView.setText(BigDecimal.valueOf(40000).multiply(BigDecimal.valueOf(buyFish)) + "");
             }
         });
 
         searchCustomers(SearchCustomerResults);
-    }
-
-    private boolean calculate()
-    {
-        String mKeepFish = mKeepFishView.getText().toString();
-        String mTakeFish = mTakeFishView.getText().toString();
-        double keepFish = 0.0;
-        double takeFish = 0.0;
-
-        if(mKeepFish.equals(""))
-        {
-            if(!mTakeFish.equals(""))
-                takeFish = Double.parseDouble(mTakeFish);
-        }
-        else if(mTakeFish.equals(""))
-        {
-            if(!mKeepFish.equals(""))
-                keepFish = Double.parseDouble(mKeepFish);
-        }
-        else {
-            keepFish = Double.parseDouble(mKeepFish);
-            takeFish = Double.parseDouble(mTakeFish);
-        }
-        mTotalFishView.setText(BigDecimal.valueOf(keepFish).add(BigDecimal.valueOf(mTotalFish)).subtract(BigDecimal.valueOf(takeFish)) + "");
-        return false;
     }
 
     private void searchCustomers(Cursor searchCustomers)
@@ -164,7 +128,7 @@ public class TakeFishActivity extends AppCompatActivity {
         while (searchCustomers.moveToNext())
         {
             listViewAdapterContent[i] = searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.FULLNAME)) + " - " + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE)) + " - "
-                                        + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
+                    + searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(KeepFishing.Properties.TOTAL_FISH));
             notes.put(searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE)), searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(KeepFishing.Properties.NOTE)));
             logs.put(searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties.MOBILE)), searchCustomers.getString(searchCustomers.getColumnIndexOrThrow(Customers.Properties._ID)));
             i++;
@@ -182,8 +146,8 @@ public class TakeFishActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), "Position " + position, Toast.LENGTH_LONG).show();
                 String item = listAdapter.getItem(position);
                 String[] fullname = item.split("-");
-                mKeepFishView.setText("");
-                mTakeFishView.setText("");
+                mBuyFishView.setText("");
+                mTotalMoneyView.setText("");
                 mFullNameView.setText(fullname[0].trim());
                 mMobileView.setText(fullname[1].trim());
                 mTotalFish = Double.parseDouble(fullname[2].trim());
@@ -244,9 +208,9 @@ public class TakeFishActivity extends AppCompatActivity {
         String fullName = mFullNameView.getText().toString();
         String mobile = mMobileView.getText().toString();
         String totalFish = mTotalFishView.getText().toString();
-        String keepFish = mKeepFishView.getText().toString();
-        String takeFish = mTakeFishView.getText().toString();
-        String feeDoFish = mFeeDoFishView.getText().toString();
+        String buyFish = mBuyFishView.getText().toString();
+        String totalMoney = mTotalMoneyView.getText().toString();
+        String status = "1"; //Buy fish
         String note = mNoteView.getText().toString();
         String log = mLogView.getText().toString();
 
@@ -268,7 +232,7 @@ public class TakeFishActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask(mobile, keepFish, takeFish, totalFish, feeDoFish, note);
+            mCustomerTask = new CustomerActionTask(mobile, buyFish, totalFish, totalMoney, status, note);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -320,19 +284,19 @@ public class TakeFishActivity extends AppCompatActivity {
     public class CustomerActionTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mMobile;
-        private final String mKeepFish;
-        private final String mTakeFish;
+        private final String mBuyFish;
+        private final String mTotalMoney;
         private final String mTotalFish;
-        private final String mFeeDoFish;
+        private final String mStatus;
         private final String mNote;
 
-        CustomerActionTask(String mobile, String keepFish, String takeFish, String totalFish, String feeDoFish, String note) {
+        CustomerActionTask(String mobile, String buyFish, String totalFish, String totalMoney, String status, String note) {
             mMobile = mobile;
-            mKeepFish = keepFish.equals("") ? "0" : keepFish;
-            mTakeFish = takeFish.equals("") ? "0" : takeFish;
+            mBuyFish = buyFish.equals("") ? "0" : buyFish;
+            mTotalMoney = totalMoney.equals("") ? "0" : totalMoney;
             mTotalFish = totalFish.equals("") ? "0" : totalFish;
-            mFeeDoFish = feeDoFish.equals("") ? "0" : feeDoFish;
             mNote = note;
+            mStatus = status;
         }
 
         @Override
@@ -361,9 +325,7 @@ public class TakeFishActivity extends AppCompatActivity {
                 String custId = customerManager.checkCustomerExisted(mMobile) + "";
 
                 KeepFishingManager keepFishingManager = new KeepFishingManager(getApplicationContext());
-
-                keepFishingManager.updateKeepFishingEntry(custId, "0", "0", mKeepFish, mTakeFish, mTotalFish, null, mNote);
-                keepFishingManager.createLogsKeepFishingEntry(custId, mKeepFish, mTakeFish, mTotalFish, mFeeDoFish, "0", "0", "0", "", dateTakeFish);
+                keepFishingManager.createLogsKeepFishingEntry(custId, "0", "0", mTotalFish, "0", mBuyFish, mTotalMoney, mStatus, "", dateTakeFish);
                 Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
 
             } else {

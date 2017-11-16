@@ -18,6 +18,13 @@
         android:title="@string/take_fish"/>
 
     <item
+        android:id="@+id/buy_fish"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="@string/buy_fish"/>
+
+    <item
         android:id="@+id/report"
         android:orderInCategory="3"
         app:showAsAction="ifRoom|withText"

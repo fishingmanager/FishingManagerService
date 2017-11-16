@@ -33,6 +33,7 @@ public class SettingsActivity extends AppCompatActivity {
     private EditText mPriceFishingView;
     private EditText mPackageFishingView;
     private EditText mPriceFeedTypeView;
+    private EditText mPriceBuyFishView;
     private View mProgressView;
     private View mSubmitFormView;
 
@@ -45,6 +46,7 @@ public class SettingsActivity extends AppCompatActivity {
         mPriceFishingView = (EditText) findViewById(R.id.price_fishing);
         mPackageFishingView = (EditText) findViewById(R.id.package_fishing);
         mPriceFeedTypeView = (EditText) findViewById(R.id.price_feed_type);
+        mPriceBuyFishView = (EditText) findViewById(R.id.price_buy_fish);
         mSubmitFormView = findViewById(R.id.settings_form);
         mProgressView = findViewById(R.id.settings_progress);
 
@@ -55,6 +57,7 @@ public class SettingsActivity extends AppCompatActivity {
             mPackageFishingView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING)));
             mPriceFishingView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING)));
             mPriceFeedTypeView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE)));
+            mPriceBuyFishView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_BUY_FISH)));
         }
         cursor.close();
 
@@ -86,6 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
         String packageFishing = mPackageFishingView.getText().toString();
         String priceFishType = mPriceFeedTypeView.getText().toString();
         String priceFishing = mPriceFishingView.getText().toString();
+        String priceBuyFish = mPriceBuyFishView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -116,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mSettingsTask = new SettingsActionTask(packageFishing, priceFishing, priceFishType);
+            mSettingsTask = new SettingsActionTask(packageFishing, priceFishing, priceFishType, priceBuyFish);
             mSettingsTask.execute((Void) null);
         }
     }
@@ -165,11 +169,13 @@ public class SettingsActivity extends AppCompatActivity {
         private final String mPackageFishing;
         private final String mPriceFishing;
         private final String mPriceFeedType;
+        private final String mPriceBuyFish;
 
-        SettingsActionTask(String packageFishing, String priceFishing, String priceFeedType) {
+        SettingsActionTask(String packageFishing, String priceFishing, String priceFeedType, String priceBuyFish) {
             mPackageFishing = packageFishing;
             mPriceFishing = priceFishing;
             mPriceFeedType = priceFeedType;
+            mPriceBuyFish = priceBuyFish;
         }
 
         @Override
@@ -189,7 +195,7 @@ public class SettingsActivity extends AppCompatActivity {
             showProgress(false);
             SettingsManager setting = new SettingsManager(getApplicationContext());
             if (success) {
-                if(setting.updateSettings("1", mPackageFishing, mPriceFishing, mPriceFeedType))
+                if(setting.updateSettings("1", mPackageFishing, mPriceFishing, mPriceFeedType, mPriceBuyFish))
                 {
                     finish();
                 }

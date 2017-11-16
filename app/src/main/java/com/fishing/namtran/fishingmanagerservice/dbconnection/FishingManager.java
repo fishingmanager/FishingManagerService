@@ -48,7 +48,7 @@ public class FishingManager {
         return fishingId;
     }
 
-    public boolean updateCloseFishingEntry(String mFishingId, String mDateOut, String mFeedType, String mKeepFish, String mTakeFish, String mTotalFish, String mTotalMoney, String mNote) {
+    public boolean updateCloseFishingEntry(String mFishingId, String mDateOut, String mFeedType, String mKeepFish, String mTakeFish, String mTotalFish, String mFeeDoFish, String mTotalMoney, String mNote) {
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
@@ -75,7 +75,7 @@ public class FishingManager {
 
         //Update keep fishing
         KeepFishingManager keepFishingManager = new KeepFishingManager(context);
-        keepFishingManager.updateKeepFishingEntry(cusId, "0", "0", mKeepFish, mTakeFish, mTotalFish, "");
+        keepFishingManager.updateKeepFishingEntry(cusId, "0", "0", mKeepFish, mTakeFish, mTotalFish, mFeeDoFish, "");
 
         //close connection
         db.close();
@@ -316,7 +316,7 @@ public class FishingManager {
         db = mDbHelper.getReadableDatabase();
 
         String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.FEED_TYPE + ", fishing." + Fishings.Properties.NOTE
-                                + ", fishing." + Fishings.Properties._ID + ", fishing." + Fishings.Properties.TOTAL_MONEY + " , customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE
+                                + ", fishing." + Fishings.Properties._ID + ", fishing." + Fishings.Properties.TOTAL_MONEY + " , customer." + Customers.Properties.FULLNAME + ", customer." + Customers.Properties.MOBILE + ", customer." + Customers.Properties._ID + " AS customerId"
                                 + ", keepfishing." + KeepFishing.Properties.KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.NO_KEEP_HOURS + ", keepfishing." + KeepFishing.Properties.KEEP_FISH
                                 + ", keepfishing." + KeepFishing.Properties.TAKE_FISH + ", keepfishing." + KeepFishing.Properties.TOTAL_FISH +
                         " FROM " +  Fishings.Properties.TABLE_NAME + " fishing, " + Customers.Properties.TABLE_NAME + " customer, " + KeepFishing.Properties.TABLE_NAME + " keepfishing" +

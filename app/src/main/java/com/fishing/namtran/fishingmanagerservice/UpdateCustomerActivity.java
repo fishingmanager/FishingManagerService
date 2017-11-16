@@ -364,6 +364,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         String keepFish = mKeepFishView.getText().toString();
         String takeFish = mTakeFishView.getText().toString();
         String totalMoney = mTotalMoneyView.getText().toString();
+        String feeDoFish = mFeeDoFishView.getText().toString();
         String note = mNoteView.getText().toString();
         String feedType = mFeedTypeView.isChecked() ? "1" : "0";
 
@@ -385,7 +386,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask(fishingId, dateOut, feedType, keepFish, takeFish, totalFish, totalMoney, note);
+            mCustomerTask = new CustomerActionTask(fishingId, dateOut, feedType, keepFish, takeFish, totalFish, feeDoFish, totalMoney, note);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -441,17 +442,19 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         private final String mFeedType;
         private final String mKeepFish;
         private final String mTakeFish;
+        private final String mFeeDoFish;
         private final String mTotalFish;
         private final String mTotalMoney;
         private final String mNote;
 
-        CustomerActionTask(String fishingId, String dateOut, String feedType, String keepFish, String takeFish, String totalFish, String totalMoney, String note) {
+        CustomerActionTask(String fishingId, String dateOut, String feedType, String keepFish, String takeFish, String totalFish, String feeDoFish, String totalMoney, String note) {
             mFishingId = fishingId;
             mDateOut = dateOut;
             mFeedType = feedType;
             mKeepFish = keepFish;
             mTakeFish = takeFish;
             mTotalFish = totalFish;
+            mFeeDoFish = feeDoFish;
             mTotalMoney = totalMoney;
             mNote = note;
         }
@@ -479,7 +482,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             if (success) {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
-                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mFeedType, mKeepFish, mTakeFish, mTotalFish, mTotalMoney, mNote)) {
+                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mFeedType, mKeepFish, mTakeFish, mTotalFish, mFeeDoFish, mTotalMoney, mNote)) {
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {

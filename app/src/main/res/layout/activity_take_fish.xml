@@ -148,6 +148,20 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/log"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/log"
+                    android:enabled="false"
+                    android:maxLines="10" />
+
+            </android.support.design.widget.TextInputLayout>
+
             <Button
                 android:id="@+id/update_take_fish_button"
                 style="?android:textAppearanceSmall"

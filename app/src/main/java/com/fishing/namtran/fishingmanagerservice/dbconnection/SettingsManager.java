@@ -19,7 +19,7 @@ public class SettingsManager {
         this.context = context;
     }
 
-    public boolean updateSettings(String mId, String mPackageFishing, String mPriceFishing, String mPriceFeedType) {
+    public boolean updateSettings(String mId, String mPackageFishing, String mPriceFishing, String mPriceFeedType, String mPriceBuyFish) {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
@@ -28,6 +28,7 @@ public class SettingsManager {
         values.put(Settings.Properties.PACKAGE_FISHING, mPackageFishing);
         values.put(Settings.Properties.PRICE_FISHING, mPriceFishing);
         values.put(Settings.Properties.PRICE_FEED_TYPE, mPriceFeedType);
+        values.put(Settings.Properties.PRICE_BUY_FISH, mPriceBuyFish);
 
         // Which row to update, based on the title
         String selection = Settings.Properties._ID + " = ?";
@@ -56,6 +57,7 @@ public class SettingsManager {
                 Settings.Properties.PACKAGE_FISHING,
                 Settings.Properties.PRICE_FISHING,
                 Settings.Properties.PRICE_FEED_TYPE,
+                Settings.Properties.PRICE_BUY_FISH
         };
 
         // Filter results WHERE "title" = 'My Title'

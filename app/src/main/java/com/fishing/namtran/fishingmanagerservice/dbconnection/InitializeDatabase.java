@@ -15,7 +15,8 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Settings.Properties._ID + " INTEGER PRIMARY KEY," +
                     Settings.Properties.PACKAGE_FISHING + " INTEGER," +
                     Settings.Properties.PRICE_FISHING + " INTEGER," +
-                    Settings.Properties.PRICE_FEED_TYPE + " INTEGER); ";
+                    Settings.Properties.PRICE_FEED_TYPE + " INTEGER," +
+                    Settings.Properties.PRICE_BUY_FISH + " INTEGER); ";
 
     private static final String SQL_CREATE_USERS_TABLE =
             "CREATE TABLE IF NOT EXISTS " + User.Properties.TABLE_NAME + " (" +
@@ -44,7 +45,22 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     KeepFishing.Properties.KEEP_FISH + " REAL," +
                     KeepFishing.Properties.TAKE_FISH + " REAL," +
                     KeepFishing.Properties.TOTAL_FISH + " REAL," +
+                    KeepFishing.Properties.FEE_DO_FISH + " INTEGER," +
                     KeepFishing.Properties.NOTE + " TEXT); ";
+
+    private static final String SQL_CREATE_LOGS_KEEP_FISHINGS_TABLE =
+            "CREATE TABLE IF NOT EXISTS " + LogsKeepFishing.Properties.TABLE_NAME + " (" +
+                    LogsKeepFishing.Properties._ID + " INTEGER PRIMARY KEY," +
+                    LogsKeepFishing.Properties.CUSTOMER_ID + " INTEGER," +
+                    LogsKeepFishing.Properties.KEEP_FISH + " REAL," +
+                    LogsKeepFishing.Properties.TAKE_FISH + " REAL," +
+                    LogsKeepFishing.Properties.TOTAL_FISH + " REAL," +
+                    LogsKeepFishing.Properties.FEE_DO_FISH + " INTEGER," +
+                    LogsKeepFishing.Properties.BUY_FISH + " REAL," +
+                    LogsKeepFishing.Properties.TOTAL_MONEY_BUY_FISH + " REAL," +
+                    LogsKeepFishing.Properties.STATUS + " INTEGER DEFAULT 0," +
+                    LogsKeepFishing.Properties.DATE_TIME + " DATETIME," +
+                    LogsKeepFishing.Properties.NOTE + " TEXT); ";
 
     private static final String SQL_CREATE_CUSTOMERS_TABLE =
             "CREATE TABLE IF NOT EXISTS " + Customers.Properties.TABLE_NAME + " (" +
@@ -66,7 +82,8 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Settings.Properties._ID + "," +
                     Settings.Properties.PACKAGE_FISHING + "," +
                     Settings.Properties.PRICE_FISHING + "," +
-                    Settings.Properties.PRICE_FEED_TYPE + ") VALUES ( 1, 4, 200000, 15000 ); ";
+                    Settings.Properties.PRICE_FEED_TYPE + "," +
+                    Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 4, 200000, 20000, 40000 ); ";
 
     private static final String SQL_CREATE_CUSTOMERS_RECORDS =
             "INSERT INTO " + Customers.Properties.TABLE_NAME + " (" +
@@ -94,7 +111,8 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     KeepFishing.Properties.KEEP_FISH + "," +
                     KeepFishing.Properties.TAKE_FISH + "," +
                     KeepFishing.Properties.TOTAL_FISH + "," +
-                    KeepFishing.Properties.NOTE + ") VALUES ( 1, 1, 0, 0, 0.0, 0.0, 0.0, '' ); ";
+                    KeepFishing.Properties.FEE_DO_FISH + "," +
+                    KeepFishing.Properties.NOTE + ") VALUES ( 1, 1, 0, 0, 0.0, 0.0, 0.0, 0, '' ); ";
 
     /*---------------- Insert sample records -----------------------*/
 
@@ -104,6 +122,19 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     private static final String SQL_DELETE_SETTINGS_TABLE =
             "DROP TABLE IF EXISTS " + Settings.Properties.TABLE_NAME;
 
+    private static final String SQL_DELETE_FISHINGS_TABLE =
+            "DROP TABLE IF EXISTS " + Fishings.Properties.TABLE_NAME;
+
+    private static final String SQL_DELETE_KEEP_FISHINGS_TABLE =
+            "DROP TABLE IF EXISTS " + KeepFishing.Properties.TABLE_NAME;
+
+    private static final String SQL_DELETE_LOGS_KEEP_FISHINGS_TABLE =
+            "DROP TABLE IF EXISTS " + LogsKeepFishing.Properties.TABLE_NAME;
+
+    private static final String SQL_DELETE_CUSTOMERS_TABLE =
+            "DROP TABLE IF EXISTS " + Customers.Properties.TABLE_NAME;
+
+
     public InitializeDatabase(Context context) {
         super(context, DbConfig.DATABASE_NAME, null, DbConfig.DATABASE_VERSION);
     }
@@ -112,6 +143,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_USERS_TABLE);
         db.execSQL(SQL_CREATE_FISHINGS_TABLE);
         db.execSQL(SQL_CREATE_KEEP_FISHINGS_TABLE);
+        db.execSQL(SQL_CREATE_LOGS_KEEP_FISHINGS_TABLE);
         db.execSQL(SQL_CREATE_CUSTOMERS_TABLE);
 
         db.execSQL(SQL_CREATE_USERS_RECORDS);
@@ -123,7 +155,12 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
-        db.execSQL(SQL_DELETE_USERS_TABLE + SQL_DELETE_SETTINGS_TABLE);
+        db.execSQL(SQL_DELETE_USERS_TABLE);
+        db.execSQL(SQL_DELETE_SETTINGS_TABLE);
+        db.execSQL(SQL_DELETE_FISHINGS_TABLE);
+        db.execSQL(SQL_DELETE_KEEP_FISHINGS_TABLE);
+        db.execSQL(SQL_DELETE_CUSTOMERS_TABLE);
+        db.execSQL(SQL_DELETE_LOGS_KEEP_FISHINGS_TABLE);
         onCreate(db);
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -16,5 +16,6 @@ public final class Settings {
         public static final String PACKAGE_FISHING = "package_fishing";
         public static final String PRICE_FISHING = "price_fishing";
         public static final String PRICE_FEED_TYPE = "price_feed_type";
+        public static final String PRICE_BUY_FISH = "price_buy_fish";
     }
 }

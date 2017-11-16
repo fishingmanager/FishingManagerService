@@ -34,7 +34,8 @@
         <activity
             android:name=".UpdateCustomerActivity"
             android:label="@string/update_status" />
-        <activity android:name=".TakeFishActivity"></activity>
+        <activity android:name=".TakeFishActivity" />
+        <activity android:name=".BuyFishActivity"></activity>
     </application>
 
 </manifest>

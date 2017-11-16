@@ -71,8 +71,10 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         } else if (id == R.id.settings) {
             Utils.Redirect(getApplicationContext(), SettingsActivity.class);
             return true;
-        }  else if (id == R.id.take_fish) {
+        } else if (id == R.id.take_fish) {
             Utils.Redirect(getApplicationContext(), TakeFishActivity.class);
+        } else if (id == R.id.buy_fish) {
+            Utils.Redirect(getApplicationContext(), BuyFishActivity.class);
         }
 
         return super.onOptionsItemSelected(item);
